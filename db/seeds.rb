@@ -5,3 +5,27 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+Task.create([
+    {
+        status: 'completed',
+        description: 'cook',
+        priority: 'low',
+        due_date: Date.parse('31-12-2020'),
+        title: 'cook'
+    },
+    {
+        status: 'completed',
+        description: 'cook',
+        priority: 'low',
+        due_date: Date.parse('31-12-2020'),
+        title: 'cook'
+    },
+    {
+        status: 'completed',
+        description: 'cook',
+        priority: 'low',
+        due_date: Date.parse('31-12-2020'),
+        title: 'cook'
+    },
+])

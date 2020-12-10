@@ -1,0 +1,13 @@
+class CreateTasks < ActiveRecord::Migration[6.0]
+  def change
+    create_table :tasks do |t|
+      t.string :status
+      t.string :description
+      t.date :due_date
+      t.string :priority
+      t.string :title
+
+      t.timestamps
+    end
+  end
+end
