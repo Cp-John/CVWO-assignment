@@ -36,7 +36,7 @@ module Api
         end
 
         def destroy
-            task = Task.find_by(params[:id])
+            task = Task.find_by(id: params[:id])
             if task.destroy
                 head :no_content
             else
