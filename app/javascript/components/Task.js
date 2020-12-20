@@ -1,42 +1,36 @@
 import React, { useState, useEffect } from "react"
 import axios from 'axios'
-import styled from 'styled-components'
+import { makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import NewTaskInfo from './NewTaskInfo';
+import HomeIcon from '@material-ui/icons/Home';
 
-const Card = styled.div`
-  width: 80%;
-  margin: 100px auto;
-`
-
-const Header = styled.div`
-  width: 80%;
-  padding: 20px 120px;
-`
-
-const Table = styled.table`
-  width: 100%;
-  text-align: center;
-  font-family: Arial, Helvetica, sans-serif;
-  border-collapse: collapse;
-  border: 1px solid #ccc;
-
-  thead {
-    background-color: yellowgreen;
+const useStyles = makeStyles({
+  table: {
+    minWidth: 650,
+  },
+  header: {
+    textAlign: "center",
+  },
+  container: {
+    width: "60%",
+    margin: "100px auto",
   }
-
-  td {
-    padding: 12px;
-    border: 1px solid #ccc
-  }
-`
-
-const Label = styled.div`
-  padding: 5px;
-  margin: 5px 0;
-`
+});
 
 const Task = (props) => {
   const [task, setTask] = useState({})
   const [loaded, setLoaded] = useState(false)
+  const [ifUpdate, setIfUpdate] = useState(false)
 
   useEffect(() => {
     const id = props.match.params.id
@@ -48,52 +42,90 @@ const Task = (props) => {
     })
   }, [])
 
-  function getDateCreated () {
+  function getDateCreated() {
     return task.attributes.created_at.slice(0, 10)
   }
-  
-  function getDateUpdated () {
+
+  function getDateUpdated() {
     return task.attributes.updated_at.slice(0, 10)
+  }
+
+  const handleUpdate = () => {
+    setIfUpdate(true)
+  }
+
+  const handleCancel = () => {
+    setIfUpdate(false)
+  }
+
+  const goHome = () => {
+    window.location.href = "/"
+  }
+
+  const classes = useStyles()
+
+  let Body = () => {
+    if (ifUpdate) {
+      return <NewTaskInfo task={task.attributes} handleCancel={handleCancel} requestType={"update"} />
+    } else {
+      return (
+        <div>
+          <div className={classes.header}>
+            <h1>{task.attributes.title}</h1>
+          </div>
+          <TableContainer component={Paper}>
+            <Table className={classes.table} aria-label="caption table">
+              <caption>created on {getDateCreated()}</caption>
+              <caption>last updated on {getDateUpdated()}</caption>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Title</TableCell>
+                  <TableCell>Description</TableCell>
+                  <TableCell>Priority</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Due date</TableCell>
+                  <TableCell></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell>{task.attributes.title}</TableCell>
+                  <TableCell>{task.attributes.description}</TableCell>
+                  <TableCell>{task.attributes.priority}</TableCell>
+                  <TableCell>{task.attributes.status}</TableCell>
+                  <TableCell>{task.attributes.due_date}</TableCell>
+                  <TableCell>
+                    <Button color="primary" variant="contained"
+                      onClick={handleUpdate} disabled={task.attributes.status == "completed"}>
+                      Update
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
+      )
+    }
   }
 
   return (
     <React.Fragment>
       {
         loaded && (
-          <Card>
-            <Header>
-              <h1>{task.attributes.title}</h1>
-            </Header>
-            <Table>
-              <thead>
-                <tr>
-                  <td>Description</td>
-                  <td>Priority</td>
-                  <td>Status</td>
-                  <td>Due Date</td>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{task.attributes.description}</td>
-                  <td>{task.attributes.priority}</td>
-                  <td>{task.attributes.status}</td>
-                  <td>{task.attributes.due_date}</td>
-                </tr>
-              </tbody>
-            </Table>
-            <Label>
-            <label>created on {getDateCreated()}</label>
-            </Label>
-            <Label>
-            <label>last updated on {getDateUpdated()}</label>
-            </Label>
-          </Card>
+          <div className={classes.container}>
+            <Tooltip title="Home">
+              <IconButton size="medium" onClick={goHome}>
+                <HomeIcon color="primary" fontSize="large"></HomeIcon>
+              </IconButton>
+            </Tooltip>
+            <Body />
+          </div>
         )
       }
-
     </React.Fragment>
   );
+
 }
 
 export default Task

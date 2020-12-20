@@ -1,118 +1,151 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import axios from 'axios'
-import styled from 'styled-components'
-import TaskList from './TaskList'
+import { makeStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import TextField from '@material-ui/core/TextField';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import Button from '@material-ui/core/Button';
+import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 
-const Textarea = styled.div`
-  textarea {
-      font-size: 13px;
-      letter-spacing: 1px;
-  }
-  textarea {
-      padding: 10px;
-      line-height: 1.5;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      box-shadow: 1px 1px 1px #999;
-  }
-`
-
-const Card = styled.div`
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  box-shadow: 1px 1px 1px #999;
-  width: 60%;
-  margin: 10px auto;
-  padding: 10px;
-
-  input[type=submit] {
-    width: 12%;
-    background-color: #4CAF50;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 40px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  button {
-    width: 12%;
-    background-color: red;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 40px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-`
-
-const Date = styled.div`
-  input {
-    margin: 10px;
-  }
-`
-
-const Select = styled.div`
-  select {
-    margin: 10px;
-    padding: 5px;
-  }
-`
+const useStyles = makeStyles((theme) => ({
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+        maxWidth: 300,
+    },
+    textField: {
+        margin: "20px auto",
+        width: 200,
+    },
+    btnContainer: {
+        margin: "20px auto",
+    },
+    btn: {
+        margin: "0 20px",
+    },
+    card: {
+        width: "100%",
+        textAlign: "center",
+    },
+    textarea: {
+        fontSize: "13px",
+        letterSpacing: "1px",
+        lineHeight: "1.5",
+        boxShadow: "1px 1px 1px #999",
+        padding: "10px",
+        border: "1px solid #ccc",
+        borderRadius: "5px",
+        margin: "auto",
+    },
+}));
 
 const NewTaskInfo = (props) => {
-    const [newTask, setNewTask] = useState({})
-    const [ifSubmit, setIfSubmit] = useState(false)
+    const classes = useStyles()
+    const task = props.task
+    const priority = task.priority ? task.priority : "medium"
+    const due_date = task.due_date ? task.due_date : ""
+    const title = task.title ? task.title : "untitled"
+    const description = task.description ? task.description : ""
+    const [newTask, setNewTask] = useState(
+        {
+            priority: priority,
+            title: title,
+            due_date: due_date,
+            description: description
+        }
+    )
 
-    useEffect(() => {
-        if (ifSubmit)
+    const requestType = props.requestType
+
+    const handleSubmit = () => {
+        if (requestType == "post") {
             axios.post('/api/tasks', { task: newTask }).then(resp => {
-                window.location.href = '/'
+                const id = resp.data.data.id
+                window.location.href =  `/tasks/${id}`
             }).catch(resp => console.log(resp))
-    }, [newTask])
-
-    const cancel = (e) => {
-        e.preventDefault()
-        window.location.href = '/'
+        } else {
+            const id = task.id
+            axios.put(`/api/tasks/${id}`, { task: newTask }).then(resp => {
+                window.location.href =  `/tasks/${id}`
+            }).catch(resp => console.log(resp))
+        }
     }
 
-    const handleAddNewTask = (e) => {
-        e.preventDefault()
-        const description = e.target.children[0].firstChild.value
-        const due_date = e.target.children[1].lastChild.value
-        const priority = e.target.children[2].lastChild.value
+    const handlePriorityChange = (e) => {
+        const priority = e.target.value
         setNewTask(
-            Object.assign({}, newTask, { title: props.title, description: description, due_date: due_date, priority: priority }))
-        setIfSubmit(true)
+            Object.assign({}, newTask, { priority: priority }))
+    }
+
+    const handleDateChange = (e) => {
+        const due_date = e.target.value
+        setNewTask(
+            Object.assign({}, newTask, { due_date: due_date }))
+    }
+
+    const handleDescriptionChange = (e) => {
+        const description = e.target.value
+        setNewTask(
+            Object.assign({}, newTask, { description: description }))
     }
 
     return (
         <React.Fragment>
-            <Card>
-                <h3>Title: {props.title}</h3>
-                <form onSubmit={handleAddNewTask}>
-                    <Textarea>
-                        <textarea id="description" name="description"
-                            rows="5" cols="60" placeholder="Description...">
-                        </textarea>
-                    </Textarea>
-                    <Date>
-                        <label>Due date:</label>
-                        <input type="date" id="due_date" name="due_date"></input>
-                    </Date>
+            <Card className={classes.card}>
+                <h3>Title: {newTask.title}</h3>
+                <form>
+                    <TextareaAutosize
+                        rowsMax={5}
+                        rows={"5"}
+                        cols={"60"}
+                        className={classes.textarea}
+                        value={newTask.description}
+                        aria-label="maximum height"
+                        placeholder="Description here ..."
+                        onChange={handleDescriptionChange}
+                    />
 
-                    <Select>
-                        <label>Priority:</label>
-                        <select name="priority">
-                            <option value="medium">medium</option>
-                            <option value="high">high</option>
-                            <option value="low">low</option>
-                        </select>
-                    </Select>
+                    <br />
 
-                    <button onClick={cancel}>Cancel</button>
-                    <input type="submit" value="Add task"></input>
+                    <TextField
+                        id="due_date"
+                        label="Due date"
+                        type="date"
+                        value={newTask.due_date}
+                        className={classes.textField}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        onChange={handleDateChange}
+                    />
+
+                    <br />
+
+                    <FormControl className={classes.formControl}>
+                        <InputLabel id="demo-controlled-open-select-label">Priority</InputLabel>
+                        <Select
+                            value={newTask.priority}
+                            onChange={handlePriorityChange}
+                        >
+                            <MenuItem value={"medium"}>medium</MenuItem>
+                            <MenuItem value={"high"}>high</MenuItem>
+                            <MenuItem value={"low"}>low</MenuItem>
+                        </Select>
+                    </FormControl>
+
+                    <br />
+
+                    <div className={classes.btnContainer}>
+                        <Button variant="contained" color="secondary" onClick={props.handleCancel} className={classes.btn}>
+                            Cancel
+                        </Button>
+                        <Button variant="contained" color="primary" onClick={handleSubmit} className={classes.btn}>
+                            Submit
+                        </Button>
+                    </div>
                 </form>
             </Card>
         </React.Fragment>

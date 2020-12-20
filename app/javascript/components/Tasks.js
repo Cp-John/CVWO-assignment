@@ -2,6 +2,10 @@ import React, { useState } from "react"
 import styled from 'styled-components'
 import TaskList from './TaskList'
 import NewTaskInfo from "./NewTaskInfo"
+import TitleInputField from './TitleInputField'
+import Typography from '@material-ui/core/Typography'
+import Divider from '@material-ui/core/Divider'
+import axios from 'axios'
 
 const Home = styled.div`
   text-align: center;
@@ -9,89 +13,47 @@ const Home = styled.div`
   margin: auto;
 `
 const Header = styled.div`
-  padding: 10px 100px 0px 100px;
-  h1 {
-    font-size: 42px;
-  }
-`
-const Subheader = styled.div`
-  font-weight: 300;
-  font-size: 20px;
-`
-
-const Form = styled.div`
-  padding: 20px;
-
-  input[type=text], select {
-    width: 40%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-
-  input[type=submit] {
-    width: 12%;
-    background-color: #4CAF50;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  input[type=submit]:hover {
-    background-color: #45a049;
-  }
+  margin: 20px auto 40px;
 `
 
 const Tasks = () => {
   const [title, setTitle] = useState("")
   const [addNewTask, setAddNewTask] = useState(false)
-  
-  const handleSubmission = (e) => {
+
+  const handleSubmit = (e) => {
     e.preventDefault()
-    setTitle(e.target.firstChild.value)
     setAddNewTask(true)
   }
 
-  const FormCom = () => {
-    return (
-      <form onSubmit={handleSubmission}>
-        <input type="text" id="title" name="title" placeholder="Title of your new task"></input>
-        <input type="submit" value="Submit"></input>
-      </form>
-    )
+  const handleChange = (e) => {
+    setTitle(e.target.value)
   }
 
-  const Body = () => {
-    if (addNewTask) {
-      return <NewTaskInfo title={title}/>
-    } else {
-      return (
-        <div>
-            <Form>
-              <FormCom />
-            </Form>
-            <TaskList />
-          </div>
-      )
-    }
+  const handleCancel = () => {
+    setAddNewTask(false)
   }
 
   return (
     <React.Fragment>
       <Home>
         <Header>
-          <h1>Todo Manager</h1>
-          <Subheader>Make your life more organized!</Subheader>
+          <Typography variant="h3" gutterBottom>Todo Manager</Typography>
+          <Typography variant="h6" gutterBottom>Make your life more organized!</Typography>
         </Header>
-
-        <Body />
+        {
+          addNewTask &&
+          <NewTaskInfo task={{ title: title }} handleCancel={handleCancel} requestType={"post"}/>
+        }
+        {
+          !addNewTask &&
+          <div>
+            <TitleInputField handleSubmit={handleSubmit} handleChange={handleChange} />
+            <Divider />
+            <TaskList />
+          </div>
+        }
       </Home>
+
     </React.Fragment>
   );
 }
