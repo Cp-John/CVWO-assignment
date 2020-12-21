@@ -10,22 +10,16 @@ Task.create([
     {
         status: 'completed',
         description: 'cook',
-        priority: 'low',
-        due_date: Date.parse('31-12-2020'),
         title: 'cook'
     },
     {
         status: 'completed',
         description: 'cook',
-        priority: 'low',
-        due_date: Date.parse('31-12-2020'),
         title: 'cook'
     },
     {
         status: 'completed',
         description: 'cook',
-        priority: 'low',
-        due_date: Date.parse('31-12-2020'),
         title: 'cook'
     },
 ])

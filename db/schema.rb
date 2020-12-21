@@ -15,8 +15,6 @@ ActiveRecord::Schema.define(version: 2020_12_10_074436) do
   create_table "tasks", force: :cascade do |t|
     t.string "status"
     t.string "description"
-    t.date "due_date"
-    t.string "priority"
     t.string "title"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

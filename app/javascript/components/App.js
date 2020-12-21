@@ -1,16 +1,23 @@
 import React from "react"
-import PropTypes from "prop-types"
 import { Route, Switch } from 'react-router-dom'
-import Task from './Task'
 import Tasks from './Tasks'
+import TaskInfo from "./TaskInfo";
+import Header from "./Header";
+import TaskAction from "./TaskAction"
+
 
 class App extends React.Component {
-  render () {
+  render() {
     return (
-      <Switch>
-        <Route exact path="/" component={Tasks} />
-        <Route exact path="/tasks/:id" component={Task} />
-      </Switch>
+      <div>
+        <Header />
+        <Switch>
+          <Route exact path="/" component={Tasks} />
+          <Route exact path="/taskinfo/:id" component={TaskInfo} />
+          <Route exact path="/task/new" component={TaskAction} />
+          <Route exact path="/task/edit/:id" component={TaskAction} />
+        </Switch>
+      </div>
     );
   }
 }

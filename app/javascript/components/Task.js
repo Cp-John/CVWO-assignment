@@ -1,131 +1,117 @@
-import React, { useState, useEffect } from "react"
-import axios from 'axios'
-import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import NewTaskInfo from './NewTaskInfo';
-import HomeIcon from '@material-ui/icons/Home';
+import React from 'react';
+import { colors } from './public/data'
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
+import { makeStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import SearchIcon from '@material-ui/icons/Search';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import Tooltip from '@material-ui/core/Tooltip';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
+import Typography from '@material-ui/core/Typography';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import EditIcon from '@material-ui/icons/Edit';
+import AddIcon from '@material-ui/icons/Add';
+
+const handleView = (id) => () => {
+  window.location.href = `/taskinfo/${id}`
+}
+
+const handleEdit = (id) => () => {
+  window.location.href = `/task/edit/${id}`
+}
+
+const handleAddTask = () => {
+  window.location.href = "/task/new"
+}
+
+const useStyles = makeStyles((theme) => ({
+  card: {
+    width: "200px",
+    height: "180px",
   },
-  header: {
-    textAlign: "center",
+  cardActionArea: {
+    '&:hover': {
+      opacity: "0.5",
+    },
+    height: "76%",
+    overflow: "hidden",
   },
-  container: {
-    width: "60%",
-    margin: "100px auto",
+  doneTask: {
+    height: "76%",
+    overflow: "hidden",
+    opacity: "0.5",
+  },
+  descriptionContainer: {
+    wordBreak: "break-all",
+    whiteSpace: "normal"
+  },
+  addIconContainer: {
+    height: "100%",
+  },
+  cardActions: {
+    backgroundColor: "#f2f5f8"
   }
-});
+}));
 
 const Task = (props) => {
-  const [task, setTask] = useState({})
-  const [loaded, setLoaded] = useState(false)
-  const [ifUpdate, setIfUpdate] = useState(false)
+  const classes = useStyles();
 
-  useEffect(() => {
-    const id = props.match.params.id
-    axios.get(`/api/tasks/${id}`).then(resp => {
-      setTask(resp.data.data)
-      setLoaded(true)
-    }).catch(resp => {
-      console.log(resp)
-    })
-  }, [])
+  const handleDone = props.handleDone
+  const handleDelete = props.handleDelete
+  if (!props.task) {
+    return (
+      <Card className={classes.card}>
+        <CardActionArea className={classes.addIconContainer} onClick={handleAddTask}>
+          <AddIcon fontSize="large" />
+        </CardActionArea>
+      </Card>
+    )
+  } else {
+    const task = props.task
+    const id = task.attributes.id
+    const status = task.attributes.status
+    const color = colors[id % colors.length]
+    const className = status == "completed" ? classes.doneTask : classes.cardActionArea
 
-  function getDateCreated() {
-    return task.attributes.created_at.slice(0, 10)
-  }
+    return (
+      <Card className={classes.card}>
+        <CardActionArea style={{ backgroundColor: color }} className={className} onClick={handleDone(id)} disabled={status == "completed"}>
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              {task.attributes.title}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p" className={classes.descriptionContainer}>
+              {task.attributes.description}
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+        <CardActions className={classes.cardActions}>
 
-  function getDateUpdated() {
-    return task.attributes.updated_at.slice(0, 10)
-  }
+          <Tooltip title="view">
+            <IconButton size="small" color="primary" onClick={handleView(id)}>
+              <SearchIcon />
+            </IconButton>
+          </Tooltip>
 
-  const handleUpdate = () => {
-    setIfUpdate(true)
-  }
+          <Tooltip title="delete">
+            <IconButton size="small" color="secondary" onClick={handleDelete(id)}>
+              <DeleteForeverIcon />
+            </IconButton>
+          </Tooltip>
 
-  const handleCancel = () => {
-    setIfUpdate(false)
-  }
-
-  const goHome = () => {
-    window.location.href = "/"
-  }
-
-  const classes = useStyles()
-
-  let Body = () => {
-    if (ifUpdate) {
-      return <NewTaskInfo task={task.attributes} handleCancel={handleCancel} requestType={"update"} />
-    } else {
-      return (
-        <div>
-          <div className={classes.header}>
-            <h1>{task.attributes.title}</h1>
-          </div>
-          <TableContainer component={Paper}>
-            <Table className={classes.table} aria-label="caption table">
-              <caption>created on {getDateCreated()}</caption>
-              <caption>last updated on {getDateUpdated()}</caption>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Title</TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell>Priority</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Due date</TableCell>
-                  <TableCell></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell>{task.attributes.title}</TableCell>
-                  <TableCell>{task.attributes.description}</TableCell>
-                  <TableCell>{task.attributes.priority}</TableCell>
-                  <TableCell>{task.attributes.status}</TableCell>
-                  <TableCell>{task.attributes.due_date}</TableCell>
-                  <TableCell>
-                    <Button color="primary" variant="contained"
-                      onClick={handleUpdate} disabled={task.attributes.status == "completed"}>
-                      Update
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </div>
-      )
-    }
-  }
-
-  return (
-    <React.Fragment>
-      {
-        loaded && (
-          <div className={classes.container}>
-            <Tooltip title="Home">
-              <IconButton size="medium" onClick={goHome}>
-                <HomeIcon color="primary" fontSize="large"></HomeIcon>
+          <Tooltip title="edit">
+            <span>
+              <IconButton size="small" color="primary" onClick={handleEdit(id)} disabled={status == "completed"}>
+                <EditIcon />
               </IconButton>
-            </Tooltip>
-            <Body />
-          </div>
-        )
-      }
-    </React.Fragment>
-  );
-
+            </span>
+          </Tooltip>
+        </CardActions>
+      </Card>
+    )
+  }
 }
 
 export default Task

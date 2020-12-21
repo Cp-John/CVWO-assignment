@@ -9,6 +9,7 @@ import App from '../components/App'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 
 document.addEventListener('DOMContentLoaded', () => {
+  document.body.style.margin = "0"
   ReactDOM.render(
     <Router>
       <Route path="/" component={App} />
