@@ -1,12 +1,17 @@
 import React from "react"
 import TaskList from './TaskList'
+import TagBoard from "./TagBoard";
 
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+  },
   container: {
-    padding: "20px",
+    flexGrow: 1,
+    padding: theme.spacing(3),
     textAlign: "center",
   },
   content: {
@@ -19,14 +24,17 @@ const Tasks = () => {
 
   return (
     <React.Fragment>
-      <div className={classes.container}>
-        <div>
-          <Typography variant="h3" gutterBottom>Todo Manager</Typography>
-          <Typography variant="h6" gutterBottom>Make your life more organized!</Typography>
-        </div>
+      <div className={classes.root}>
+        <TagBoard />
+        <div className={classes.container}>
+          <div>
+            <Typography variant="h3" gutterBottom>Todo Manager</Typography>
+            <Typography variant="h6" gutterBottom>Make your life more organized!</Typography>
+          </div>
 
-        <div className={classes.content}>
-          <TaskList />
+          <div className={classes.content}>
+            <TaskList />
+          </div>
         </div>
       </div>
 

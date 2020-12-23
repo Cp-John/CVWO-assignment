@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import axios from 'axios'
+import TagBoard from './TagBoard'
 
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -12,6 +13,14 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 
 const useStyles = makeStyles((theme) => ({
+    root: {
+        display: "flex",
+    },
+    content: {
+        flexGrow: 1,
+        padding: theme.spacing(3),
+        textAlign: "center",
+    },
     container: {
         width: "80%",
         margin: "auto",
@@ -27,10 +36,10 @@ const useStyles = makeStyles((theme) => ({
         textAlign: "center",
     },
     cardContent: {
-        backgroundColor: "whitesmoke",
     },
     cardActions: {
         textAlign: "center",
+        backgroundColor: "whitesmoke",
     },
     btn: {
         margin: "0 120px",
@@ -106,45 +115,50 @@ const TaskAction = (props) => {
 
     return (
         <React.Fragment>
-            <div className={classes.container}>
-                <div className={classes.header}>
-                    <Typography variant="h3" align="center">{action} Task</Typography>
-                </div>
-                <Divider />
-                <Card className={classes.card}>
-                    {
-                        loaded &&
-                        <div>
-                            <CardContent className={classes.cardContent}>
-                                <TextField id="title" label="title" variant="outlined" defaultValue={newTask.attributes.title} onChange={handleTitleChange} />
-
-                                <br />
-
-                                <TextareaAutosize
-                                    rowsMax={5}
-                                    rows={"5"}
-                                    cols={"40"}
-                                    className={classes.textarea}
-                                    defaultValue={newTask.attributes.description}
-                                    aria-label="description"
-                                    placeholder="Description here ..."
-                                    onChange={handleDescriptionChange}
-                                />
-
-                                <br />
-
-                            </CardContent>
-                            <CardActions className={classes.cardActions}>
-                                <Button variant="contained" color="secondary" onClick={handleCancel} className={classes.btn}>
-                                    Cancel
-                                </Button>
-                                <Button variant="contained" color="primary" onClick={handleSubmit} className={classes.btn}>
-                                    Submit
-                                </Button>
-                            </CardActions>
+            <div className={classes.root}>
+                <TagBoard />
+                <div className={classes.content}>
+                    <div className={classes.container}>
+                        <div className={classes.header}>
+                            <Typography variant="h3" align="center">{action} Task</Typography>
                         </div>
-                    }
-                </Card>
+                        <Divider />
+                        <Card className={classes.card}>
+                            {
+                                loaded &&
+                                <div>
+                                    <CardContent className={classes.cardContent}>
+                                        <TextField id="title" label="title" variant="outlined" defaultValue={newTask.attributes.title} onChange={handleTitleChange} />
+
+                                        <br />
+
+                                        <TextareaAutosize
+                                            rowsMax={5}
+                                            rows={"5"}
+                                            cols={"40"}
+                                            className={classes.textarea}
+                                            defaultValue={newTask.attributes.description}
+                                            aria-label="description"
+                                            placeholder="Description here ..."
+                                            onChange={handleDescriptionChange}
+                                        />
+
+                                        <br />
+
+                                    </CardContent>
+                                    <CardActions className={classes.cardActions}>
+                                        <Button variant="contained" color="secondary" onClick={handleCancel} className={classes.btn}>
+                                            Cancel
+                                        </Button>
+                                        <Button variant="contained" color="primary" onClick={handleSubmit} className={classes.btn}>
+                                            Submit
+                                        </Button>
+                                    </CardActions>
+                                </div>
+                            }
+                        </Card>
+                    </div>
+                </div>
             </div>
         </React.Fragment>
     );

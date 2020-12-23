@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react"
-import axios from 'axios'
-import { colors } from './public/data'
+import React, { useState, useEffect } from "react";
+import axios from 'axios';
+import { colors } from './public/data';
 import clsx from 'clsx';
+import TagBoard from './TagBoard';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -30,6 +31,14 @@ const handleDelete = (id) => () => {
 }
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    textAlign: "center",
+  },
   card: {
     width: "400px",
     minHeight: "280px",
@@ -105,60 +114,65 @@ const TaskInfo = (props) => {
 
   return (
     <React.Fragment>
-      {
-        loaded && (
-          <Card className={classes.card}>
-            <CardContent className={classes.cardContent} style={{ backgroundColor: color }}>
-              <Typography gutterBottom variant="h5" component="h2">
-                {task.attributes.title}
-              </Typography>
-              <Typography variant="body2" color="textSecondary" component="p" className={classes.descriptionContainer}>
-                {task.attributes.description}
-              </Typography>
-            </CardContent>
-            <CardActions className={classes.cardActions}>
+      <div className={classes.root}>
+        <TagBoard />
+        <div className={classes.content}>
+            {
+              loaded && (
+                <Card className={classes.card}>
+                  <CardContent className={classes.cardContent} style={{ backgroundColor: color }}>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      {task.attributes.title}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary" component="p" className={classes.descriptionContainer}>
+                      {task.attributes.description}
+                    </Typography>
+                  </CardContent>
+                  <CardActions className={classes.cardActions}>
 
-              <Tooltip title="edit">
-                <span>
-                  <IconButton color="primary" onClick={handleEdit(id)} disabled={task.attributes.status == "completed"}>
-                    <EditIcon />
-                  </IconButton>
-                </span>
-              </Tooltip>
+                    <Tooltip title="edit">
+                      <span>
+                        <IconButton color="primary" onClick={handleEdit(id)} disabled={task.attributes.status == "completed"}>
+                          <EditIcon />
+                        </IconButton>
+                      </span>
+                    </Tooltip>
 
-              <Tooltip title="delete">
-                <IconButton color="secondary" onClick={handleDelete(id)}>
-                  <DeleteForeverIcon />
-                </IconButton>
-              </Tooltip>
+                    <Tooltip title="delete">
+                      <IconButton color="secondary" onClick={handleDelete(id)}>
+                        <DeleteForeverIcon />
+                      </IconButton>
+                    </Tooltip>
 
-              <Tooltip title="done">
-                <span>
-                  <IconButton onClick={handleDone} disabled={task.attributes.status == "completed"}>
-                    <DoneIcon className={clsx(task.attributes.status != "completed" && classes.notTicked)}/>
-                  </IconButton>
-                </span>
-              </Tooltip>
+                    <Tooltip title="done">
+                      <span>
+                        <IconButton onClick={handleDone} disabled={task.attributes.status == "completed"}>
+                          <DoneIcon className={clsx(task.attributes.status != "completed" && classes.notTicked)}/>
+                        </IconButton>
+                      </span>
+                    </Tooltip>
 
-              <IconButton style={{marginLeft: "auto"}}
-                className={clsx(classes.expand, expanded && classes.expandOpen)}
-                onClick={handleExpandClick}
-                aria-expanded={expanded}
-                aria-label="show more"
-              >
-                <ExpandMoreIcon />
-              </IconButton>
-            </CardActions>
-            <Collapse in={expanded} timeout="auto" unmountOnExit>
-              <CardContent>
-                <Typography paragraph>status: {task.attributes.status}</Typography>
-                <Typography paragraph>created on: {getDateCreated()}</Typography>
-                <Typography paragraph>last updated on: {getDateUpdated()}</Typography>
-              </CardContent>
-            </Collapse>
-          </Card>
-        )
-      }
+                    <IconButton style={{marginLeft: "auto"}}
+                      className={clsx(classes.expand, expanded && classes.expandOpen)}
+                      onClick={handleExpandClick}
+                      aria-expanded={expanded}
+                      aria-label="show more"
+                    >
+                      <ExpandMoreIcon />
+                    </IconButton>
+                  </CardActions>
+                  <Collapse in={expanded} timeout="auto" unmountOnExit>
+                    <CardContent>
+                      <Typography paragraph>status: {task.attributes.status}</Typography>
+                      <Typography paragraph>created on: {getDateCreated()}</Typography>
+                      <Typography paragraph>last updated on: {getDateUpdated()}</Typography>
+                    </CardContent>
+                  </Collapse>
+                </Card>
+              )
+            }
+        </div>
+      </div>
     </React.Fragment>
   );
 

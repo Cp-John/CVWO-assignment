@@ -13,6 +13,9 @@ const useStyles = makeStyles((theme) => ({
     homeButton: {
         marginRight: theme.spacing(2),
     },
+    appBar: {
+        zIndex: theme.zIndex.drawer + 1,
+    }
 }));
 
 const goHome = () => {
@@ -24,7 +27,7 @@ const Header = () => {
 
     return (
         <div className={classes.root}>
-            <AppBar position="static">
+            <AppBar position="fixed" className={classes.appBar}>
                 <Toolbar variant="regular">
                     <IconButton edge="start" className={classes.homeButton} color="inherit" aria-label="home" onClick={goHome}>
                         <HomeIcon />
@@ -34,6 +37,7 @@ const Header = () => {
             </Typography>
                 </Toolbar>
             </AppBar>
+            <Toolbar />
         </div>
     );
 }
