@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import TaskList from './TaskList'
 import TagBoard from "./TagBoard";
 
@@ -21,11 +21,21 @@ const useStyles = makeStyles((theme) => ({
 
 const Tasks = () => {
   const classes = useStyles()
+  const [selectedTags, setSelectedTags] = useState([])
+  
+  const handleSelectTag = (selectedTag) => {
+    const id = selectedTag.attributes.id
+    if (selectedTags.includes(id)) {
+      setSelectedTags([])
+    } else {
+      setSelectedTags([id])
+    }
+  }
 
   return (
     <React.Fragment>
       <div className={classes.root}>
-        <TagBoard />
+        <TagBoard selectedTags={selectedTags} handleSelectTag={handleSelectTag} deletable={true} />
         <div className={classes.container}>
           <div>
             <Typography variant="h3" gutterBottom>Todo Manager</Typography>
@@ -33,7 +43,7 @@ const Tasks = () => {
           </div>
 
           <div className={classes.content}>
-            <TaskList />
+            <TaskList selectedTags={selectedTags}/>
           </div>
         </div>
       </div>

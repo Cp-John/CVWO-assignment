@@ -61,19 +61,23 @@ const TaskAction = (props) => {
 
     const [newTask, setNewTask] = useState({})
     const [loaded, setLoaded] = useState(false)
+    const [selectedTags, setSelectedTags] = useState([1])
 
     const id = props.match.params.id
+    const action = id ? "Edit" : "New"
 
     useEffect(() => {
-        if (id) {
+        if (action == "Edit") {
             axios.get(`/api/tasks/${id}`).then(resp => {
-                setNewTask(resp.data.data)
+                const tagId = parseInt(resp.data.data.relationships.category.data.id)
+                setSelectedTags([tagId])
+                setNewTask(Object.assign({}, resp.data.data.attributes, { category_id: tagId }))
                 setLoaded(true)
             }).catch(resp => {
                 console.log(resp)
             })
         } else {
-            setNewTask({ attributes: { title: "", description: "" } })
+            setNewTask({ title: "", description: "", category_id: 1 })
             setLoaded(true)
         }
     }, [])
@@ -111,12 +115,20 @@ const TaskAction = (props) => {
             Object.assign({}, newTask, { title: title }))
     }
 
-    const action = id ? "Edit" : "New"
+    const handleSelectTag = (selectedTag) => {
+        if (selectedTags.includes(selectedTag.attributes.id)) {
+            setSelectedTags([1])
+            setNewTask(Object.assign({}, newTask, { category_id: 1 }))
+        } else {
+            setSelectedTags([selectedTag.attributes.id])
+            setNewTask(Object.assign({}, newTask, { category_id: selectedTag.attributes.id }))
+        }
+    }
 
     return (
         <React.Fragment>
             <div className={classes.root}>
-                <TagBoard />
+                <TagBoard handleSelectTag={handleSelectTag} selectedTags={selectedTags} editable={true} />
                 <div className={classes.content}>
                     <div className={classes.container}>
                         <div className={classes.header}>
@@ -128,7 +140,7 @@ const TaskAction = (props) => {
                                 loaded &&
                                 <div>
                                     <CardContent className={classes.cardContent}>
-                                        <TextField id="title" label="title" variant="outlined" defaultValue={newTask.attributes.title} onChange={handleTitleChange} />
+                                        <TextField id="title" label="title" variant="outlined" defaultValue={newTask.title} onChange={handleTitleChange} />
 
                                         <br />
 
@@ -137,7 +149,7 @@ const TaskAction = (props) => {
                                             rows={"5"}
                                             cols={"40"}
                                             className={classes.textarea}
-                                            defaultValue={newTask.attributes.description}
+                                            defaultValue={newTask.description}
                                             aria-label="description"
                                             placeholder="Description here ..."
                                             onChange={handleDescriptionChange}

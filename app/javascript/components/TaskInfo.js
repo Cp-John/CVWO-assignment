@@ -13,9 +13,11 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
 import Collapse from '@material-ui/core/Collapse';
+import Chip from '@material-ui/core/Chip';
 import EditIcon from '@material-ui/icons/Edit';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import DoneIcon from '@material-ui/icons/Done';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { green } from '@material-ui/core/colors'
 
 const handleEdit = (id) => () => {
@@ -39,18 +41,25 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(3),
     textAlign: "center",
   },
+  backBtnContainer: {
+    textAlign: "left",
+  },
   card: {
     width: "400px",
     minHeight: "280px",
-    margin: "80px auto",
+    margin: "30px auto",
   },
   cardContent: {
     minHeight: "220px",
     overflow: "hidden",
   },
+  tagContainer: {
+    textAlign: "left",
+  },
   descriptionContainer: {
     wordBreak: "break-all",
-    whiteSpace: "normal"
+    whiteSpace: "normal",
+    textAlign: "left",
   },
   addIconContainer: {
     height: "100%",
@@ -71,18 +80,25 @@ const useStyles = makeStyles((theme) => ({
   expandOpen: {
     transform: 'rotate(180deg)',
   },
+  expandCardContent: {
+    textAlign: "left",
+  }
 }));
 
 const TaskInfo = (props) => {
   const [task, setTask] = useState({})
+  const [tag, setTag] = useState({})
   const [loaded, setLoaded] = useState(false)
   const [expanded, setExpanded] = useState(true);
+  const [selectedTags, setSelectedTags] = useState([]);
 
   const classes = useStyles()
   const id = props.match.params.id
 
   useEffect(() => {
     axios.get(`/api/tasks/${id}`).then(resp => {
+      setTag(resp.data.included[0])
+      setSelectedTags([resp.data.included[0].attributes.id])
       setTask(resp.data.data)
       setLoaded(true)
     }).catch(resp => {
@@ -110,67 +126,80 @@ const TaskInfo = (props) => {
     })
   }
 
+  const goHome = () => {
+    window.location.href = "/"
+  }
+
   const color = colors[id % colors.length]
 
   return (
     <React.Fragment>
       <div className={classes.root}>
-        <TagBoard />
+        <TagBoard selectedTags={selectedTags} handleSelectTag={undefined} />
         <div className={classes.content}>
-            {
-              loaded && (
-                <Card className={classes.card}>
-                  <CardContent className={classes.cardContent} style={{ backgroundColor: color }}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {task.attributes.title}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary" component="p" className={classes.descriptionContainer}>
-                      {task.attributes.description}
-                    </Typography>
-                  </CardContent>
-                  <CardActions className={classes.cardActions}>
+          <div className={classes.backBtnContainer}>
+            <IconButton color="primary" onClick={goHome}>
+              <ArrowBackIcon />
+            </IconButton>
+          </div>
+          {
+            loaded && (
+              <Card className={classes.card}>
+                <CardContent className={classes.cardContent} style={{ backgroundColor: color }}>
+                  <div className={classes.tagContainer}>
+                    <Chip label={tag.attributes.title}></Chip>
+                  </div>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    {task.attributes.title}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" component="p" className={classes.descriptionContainer}>
+                    {task.attributes.description}
+                  </Typography>
+                </CardContent>
+                <CardActions className={classes.cardActions}>
 
-                    <Tooltip title="edit">
-                      <span>
-                        <IconButton color="primary" onClick={handleEdit(id)} disabled={task.attributes.status == "completed"}>
-                          <EditIcon />
-                        </IconButton>
-                      </span>
-                    </Tooltip>
-
-                    <Tooltip title="delete">
-                      <IconButton color="secondary" onClick={handleDelete(id)}>
-                        <DeleteForeverIcon />
+                  <Tooltip title="edit">
+                    <span>
+                      <IconButton color="primary" onClick={handleEdit(id)} disabled={task.attributes.status == "completed"}>
+                        <EditIcon />
                       </IconButton>
-                    </Tooltip>
+                    </span>
+                  </Tooltip>
 
-                    <Tooltip title="done">
-                      <span>
-                        <IconButton onClick={handleDone} disabled={task.attributes.status == "completed"}>
-                          <DoneIcon className={clsx(task.attributes.status != "completed" && classes.notTicked)}/>
-                        </IconButton>
-                      </span>
-                    </Tooltip>
-
-                    <IconButton style={{marginLeft: "auto"}}
-                      className={clsx(classes.expand, expanded && classes.expandOpen)}
-                      onClick={handleExpandClick}
-                      aria-expanded={expanded}
-                      aria-label="show more"
-                    >
-                      <ExpandMoreIcon />
+                  <Tooltip title="delete">
+                    <IconButton color="secondary" onClick={handleDelete(id)}>
+                      <DeleteForeverIcon />
                     </IconButton>
-                  </CardActions>
-                  <Collapse in={expanded} timeout="auto" unmountOnExit>
-                    <CardContent>
-                      <Typography paragraph>status: {task.attributes.status}</Typography>
-                      <Typography paragraph>created on: {getDateCreated()}</Typography>
-                      <Typography paragraph>last updated on: {getDateUpdated()}</Typography>
-                    </CardContent>
-                  </Collapse>
-                </Card>
-              )
-            }
+                  </Tooltip>
+
+                  <Tooltip title="done">
+                    <span>
+                      <IconButton onClick={handleDone} disabled={task.attributes.status == "completed"}>
+                        <DoneIcon className={clsx(task.attributes.status != "completed" && classes.notTicked)} />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+
+                  <IconButton style={{ marginLeft: "auto" }}
+                    className={clsx(classes.expand, expanded && classes.expandOpen)}
+                    onClick={handleExpandClick}
+                    aria-expanded={expanded}
+                    aria-label="show more"
+                  >
+                    <ExpandMoreIcon />
+                  </IconButton>
+                </CardActions>
+                <Collapse in={expanded} timeout="auto" unmountOnExit>
+                  <CardContent className={classes.expandCardContent}>
+                    <Typography paragraph>status: {task.attributes.status}</Typography>
+                    <Typography paragraph>created on: {getDateCreated()}</Typography>
+                    <Typography paragraph>last updated on: {getDateUpdated()}</Typography>
+
+                  </CardContent>
+                </Collapse>
+              </Card>
+            )
+          }
         </div>
       </div>
     </React.Fragment>

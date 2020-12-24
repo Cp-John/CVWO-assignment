@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Tag from './Tag';
+import axios from 'axios'
 
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -7,11 +8,13 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Paper from '@material-ui/core/Paper';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
+import EditIcon from '@material-ui/icons/Edit';
 import Card from '@material-ui/core/Card';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const drawerWidth = 240;
 
@@ -26,34 +29,43 @@ const useStyles = makeStyles((theme) => ({
     drawerContainer: {
         overflow: 'auto',
     },
+    btn: {
+        margin: "10px",
+    },
     tagsContainer: {
         display: 'flex',
         justifyContent: 'flex-start',
         flexWrap: 'wrap',
         listStyle: 'none',
         padding: theme.spacing(0.5),
-        margin: 0,
+        margin: "0"
     },
     formContainer: {
         padding: "10px",
         margin: "200px auto",
         width: "80%",
     },
-    addIconContainer: {
+    actionContainer: {
         textAlign: "right",
-        margin: "5px",
     }
 }));
 
 
-const TagBoard = () => {
+const TagBoard = (props) => {
     const classes = useStyles();
     const [tags, setTags] = useState([])
     const [ifAddTag, setIfAddTag] = useState(false)
+    const [ifEditTags, setIfEditTags] = useState(false)
     const [tagName, setTagName] = useState("")
+    const editable = props.editable
+    const deletable = props.deletable
 
     const handleAddTag = () => {
         setIfAddTag(true)
+    }
+
+    const handleEditTags = () => {
+        setIfEditTags(!ifEditTags)
     }
 
     const handleCancel = () => {
@@ -62,32 +74,34 @@ const TagBoard = () => {
     }
 
     const handleSubmit = () => {
-        console.log(tagName)
+        axios.post("/api/categories", { title: tagName }).then(resp => {
+            setTags(tags.concat([resp.data.data]))
+            setIfAddTag(false)
+        }).catch(resp => {
+            console.log(resp)
+        })
     }
 
     const handleTagNameChange = (e) => {
         setTagName(e.target.value)
     }
 
+    const handleDelete = (id) => () => {
+        axios.delete(`/api/categories/${id}`).then(resp => {
+            setTags(tags.filter(tag => tag.attributes.id != id))
+        }).catch(resp => {
+            console.log(resp)
+        })
+    }
+
+    const handleSelect = props.handleSelectTag
+
     useEffect(() => {
-        setTags([
-            {
-                title: "work",
-                selected: false,
-            },
-            {
-                title: "painting",
-                selected: false,
-            },
-            {
-                title: "life",
-                selected: false,
-            },
-            {
-                title: "reading",
-                selected: false,
-            },
-        ])
+        axios.get("/api/categories").then(resp => {
+            setTags(resp.data.data)
+        }).catch(resp => {
+            console.log(resp)
+        })
     }, [])
 
     return (
@@ -103,16 +117,24 @@ const TagBoard = () => {
                 {
                     !ifAddTag &&
                     <div>
-                        <div className={classes.addIconContainer}>
-                            <Fab size="small" color="primary" aria-label="add" onClick={handleAddTag}>
-                                <AddIcon />
-                            </Fab>
+                        <div className={classes.actionContainer}>
+                            <Tooltip title="edit tags" style={{display: deletable ? "inlineFlex" : "none"}}>
+                                <Fab size="small" color="secondary" aria-label="edit" onClick={handleEditTags} className={classes.btn}>
+                                    <EditIcon />
+                                </Fab>
+                            </Tooltip>
+                            <Tooltip title="create a tag" style={{display: editable ? "inlineFlex" : "none"}}>
+                                <Fab size="small" color="primary" aria-label="add" onClick={handleAddTag} className={classes.btn}>
+                                    <AddIcon />
+                                </Fab>
+                            </Tooltip>
                         </div>
                         <Paper component="ul" className={classes.tagsContainer}>
                             {tags.map(tag => {
+                                let ifSelected = props.selectedTags.includes(tag.attributes.id)
                                 return (
-                                    <li key={tag.title}>
-                                        <Tag tag={tag} />
+                                    <li key={tag.attributes.id}>
+                                        <Tag tag={tag} ifEdit={ifEditTags} ifSelected={ifSelected} handleDelete={handleDelete} handleSelect={handleSelect} />
                                     </li>
                                 )
                             })}

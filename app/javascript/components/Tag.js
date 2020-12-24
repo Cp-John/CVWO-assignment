@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Chip from '@material-ui/core/Chip';
@@ -14,22 +14,29 @@ const useStyles = makeStyles((theme) => ({
 
 const Tag = (props) => {
     const classes = useStyles();
-    const [tag, setTag] = useState(props.tag)
+    const tag = props.tag
+    const ifEdit = props.ifEdit
+    const avatar = tag.attributes.title.charAt(0).toUpperCase()
+    const ifSelected = props.ifSelected
 
-    const handleSelect = () => {
-        setTag(Object.assign({}, tag, { selected: !tag.selected })) 
-    }
+    const handleSelect = ifEdit || !props.handleSelect ? undefined
+        : () => props.handleSelect(tag)
+
+    const handleDelete = !ifEdit || tag.attributes.title == "others" ? undefined
+        : props.handleDelete(tag.attributes.id)
 
     return (
         <Chip
-            label={tag.title}
-            avatar={<Avatar>M</Avatar>}
+            label={tag.attributes.title}
+            avatar={<Avatar>{avatar}</Avatar>}
             variant="outlined"
-            color={tag.selected ? "primary" : "default"}
-            onClick={ handleSelect }
             className={classes.chip}
+            onDelete={handleDelete}
+            onClick={handleSelect}
+            color={ifSelected ? "primary" : "default"}
         />
     )
+
 }
 
 export default Tag

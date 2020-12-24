@@ -5,20 +5,21 @@ module Api
 
         def index
             tasks = Task.all
-            render json: TaskSerializer.new(tasks).serialized_json
+            render json: TaskSerializer.new(tasks, options).serialized_json
         end
         
         def show
             task = Task.find_by(id: params[:id])
-            render json: TaskSerializer.new(task).serialized_json
+            render json: TaskSerializer.new(task, options).serialized_json
         end
         
         private def task_params
-            params.require(:task).permit(:status, :description, :priority, :due_date, :title)
+            params.require(:task).permit(:title, :description, :status, :category_id)
         end
 
         def create
             task = Task.new(task_params)
+            
             if task.save
                 render json: TaskSerializer.new(task).serialized_json
             else
@@ -29,7 +30,7 @@ module Api
         def update
             task = Task.find_by(id: params[:id])
             if task.update(task_params)
-                render json: TaskSerializer.new(task).serialized_json
+                render json: TaskSerializer.new(task, options).serialized_json
             else
                 render json: { error: task.errors.messages }, status: 422
             end
@@ -45,8 +46,8 @@ module Api
         end
 
         # to initialize the serializer with options to create a compound document
-        # def options
-        #     @options ||= { include: %i[reviews]}
-        # end
+        def options
+            @options ||= { include: %i[category] }
+        end
     end
 end

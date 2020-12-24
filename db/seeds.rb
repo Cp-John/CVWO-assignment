@@ -6,20 +6,32 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
+Category.create([
+    {
+        title: "others"
+    },
+    {
+        title: "work"
+    },
+])
+
 Task.create([
     {
         status: 'completed',
         description: 'cook',
-        title: 'cook'
+        title: 'cook',
+        category: Category.first
     },
     {
         status: 'completed',
         description: 'cook',
-        title: 'cook'
+        title: 'cook',
+        category: Category.first
     },
     {
         status: 'completed',
         description: 'cook',
-        title: 'cook'
+        title: 'cook',
+        category: Category.second
     },
 ])

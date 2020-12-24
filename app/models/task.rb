@@ -1,4 +1,5 @@
 class Task < ApplicationRecord
+    belongs_to :category
     before_create :preprocess
 
     def preprocess
@@ -10,15 +11,6 @@ class Task < ApplicationRecord
             self.title = "untitled"
         end
 
-        # if self.due_date
-        #     if self.due_date >= Date.today
-        #         self.status = "expired"
-        #     else
-        #         self.status = "not started"
-        #     end
-        # else
-        #     self.status = "not started"
-        # end
         self.status = "not started"
     end
 end

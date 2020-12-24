@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/Add';
+import Chip from '@material-ui/core/Chip';
 
 const handleView = (id) => () => {
   window.location.href = `/taskinfo/${id}`
@@ -38,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
     height: "76%",
     overflow: "hidden",
   },
+  tagContainer: {
+    textAlign: "left",
+  },
   doneTask: {
     height: "76%",
     overflow: "hidden",
@@ -51,12 +55,14 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
   },
   cardActions: {
-    backgroundColor: "#f2f5f8"
+    backgroundColor: "#f2f5f8",
   }
 }));
 
 const Task = (props) => {
   const classes = useStyles();
+
+  const tag = props.tag
 
   const handleDone = props.handleDone
   const handleDelete = props.handleDelete
@@ -78,6 +84,9 @@ const Task = (props) => {
     return (
       <Card className={classes.card}>
         <CardActionArea style={{ backgroundColor: color }} className={className} onClick={handleDone(id)} disabled={status == "completed"}>
+          <div className={classes.tagContainer}>
+            <Chip label={tag.attributes.title} style={{ marginLeft: "5px", height: "20px" }}></Chip>
+          </div>
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
               {task.attributes.title}
@@ -108,6 +117,7 @@ const Task = (props) => {
               </IconButton>
             </span>
           </Tooltip>
+
         </CardActions>
       </Card>
     )

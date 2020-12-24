@@ -7,14 +7,16 @@ import Grid from '@material-ui/core/Grid';
 import Divider from "@material-ui/core/Divider";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 
-const TaskList = () => {
+const TaskList = (props) => {
   const [tasks, setTasks] = useState([])
-  const [showAll, setShowAll] = useState(false)
+  const [tags, setTags] = useState([])
+  const [showAll, setShowAll] = useState(true)
+  let selectedTags = props.selectedTags
 
   // fetch data
   useEffect(() => {
     axios.get('/api/tasks').then(resp => {
-      console.log(resp.data.data)
+      setTags(resp.data.included)
       setTasks(resp.data.data)
     }).catch(resp => {
       console.log(resp)
@@ -36,7 +38,6 @@ const TaskList = () => {
   const handleDone = (id) => () => {
     const task = tasks.find(task => task.attributes.id == id)
     if (task.attributes.status != "completed") {
-      console.log(id)
       axios.put(`/api/tasks/${id}`, { task: { status: 'completed' } }).then(resp => {
         setTasks(tasks.map(task => task.id == id ? resp.data.data : task))
       }).catch(resp => {
@@ -47,26 +48,36 @@ const TaskList = () => {
 
   let tasksShown = showAll ? tasks : tasks.filter(task => task.attributes.status != "completed")
 
+  if (selectedTags.length > 0) {
+    selectedTags.forEach(tagId => {
+      console.log(tagId)
+      tasksShown = tasksShown.filter(task => {
+        return parseInt(task.relationships.category.data.id) == tagId
+      })
+    });
+  } 
+
   return (
     <React.Fragment>
       <Divider />
       <FormControlLabel
         control={
           <Switch
-            checked={showAll}
+            checked={!showAll}
             onChange={handleToggle}
             name="showAll"
             color="primary"
           />
         }
-        label="Show All"
+        label="Show Only Completed"
       />
       <Grid container spacing={5}>
         {
           tasksShown.map(task => {
+            const tag = tags.find(tag => tag.id == task.relationships.category.data.id)
             return (
               <Grid item key={task.attributes.id}>
-                <Task task={task} handleDone={handleDone} handleDelete={handleDelete} />
+                <Task task={task} tag={tag} handleDone={handleDone} handleDelete={handleDelete} />
               </Grid>
             )
           })
