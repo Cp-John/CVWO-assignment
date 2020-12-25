@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import axios from 'axios'
 import TagBoard from './TagBoard'
+import { colors } from './public/data'
 
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -11,6 +12,7 @@ import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
+import Chip from "@material-ui/core/Chip";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -24,25 +26,39 @@ const useStyles = makeStyles((theme) => ({
     container: {
         width: "80%",
         margin: "auto",
-        padding: "40px",
+        padding: "10px",
     },
     header: {
         margin: "20px",
     },
+    body: {
+        display: "flex",
+        marginTop: "20px",
+    },
     card: {
-        margin: "40px auto",
-        width: "550px",
+        margin: "40px 20px",
+        width: "450px",
         height: "320px",
         textAlign: "center",
     },
     cardContent: {
+        minHeight: "100%",
+        overflow: "hidden",
+    },
+    tagContainer: {
+        textAlign: "left",
+    },
+    descriptionContainer: {
+        wordBreak: "break-all",
+        whiteSpace: "normal",
+        textAlign: "left",
     },
     cardActions: {
         textAlign: "center",
         backgroundColor: "whitesmoke",
     },
     btn: {
-        margin: "0 120px",
+        margin: "0 80px",
     },
     textarea: {
         fontSize: "13px",
@@ -62,11 +78,16 @@ const TaskAction = (props) => {
     const [newTask, setNewTask] = useState({})
     const [loaded, setLoaded] = useState(false)
     const [selectedTags, setSelectedTags] = useState([1])
+    const [tagTitle, setTagTitle] = useState("others")
+    const [color, setColor] = useState(undefined)
 
     const id = props.match.params.id
     const action = id ? "Edit" : "New"
 
     useEffect(() => {
+        const rdm = Math.floor(Math.random() * colors.length)
+        setColor(colors[rdm])
+
         if (action == "Edit") {
             axios.get(`/api/tasks/${id}`).then(resp => {
                 const tagId = parseInt(resp.data.data.relationships.category.data.id)
@@ -118,9 +139,11 @@ const TaskAction = (props) => {
     const handleSelectTag = (selectedTag) => {
         if (selectedTags.includes(selectedTag.attributes.id)) {
             setSelectedTags([1])
+            setTagTitle("others")
             setNewTask(Object.assign({}, newTask, { category_id: 1 }))
         } else {
             setSelectedTags([selectedTag.attributes.id])
+            setTagTitle(selectedTag.attributes.title)
             setNewTask(Object.assign({}, newTask, { category_id: selectedTag.attributes.id }))
         }
     }
@@ -135,40 +158,57 @@ const TaskAction = (props) => {
                             <Typography variant="h3" align="center">{action} Task</Typography>
                         </div>
                         <Divider />
-                        <Card className={classes.card}>
-                            {
-                                loaded &&
-                                <div>
-                                    <CardContent className={classes.cardContent}>
-                                        <TextField id="title" label="title" variant="outlined" defaultValue={newTask.title} onChange={handleTitleChange} />
+                        <div className={classes.body}>
+                            <Card className={classes.card}>
+                                <CardContent className={classes.cardContent} style={{ backgroundColor: color }}>
+                                    <div className={classes.tagContainer}>
+                                        <Chip label={tagTitle}></Chip>
+                                    </div>
+                                    <Typography gutterBottom variant="h5" component="h2">
+                                        {newTask.title}
+                                    </Typography>
+                                    <Typography variant="body2" color="textSecondary" component="p" className={classes.descriptionContainer}>
+                                        {newTask.description}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                            <Divider orientation="vertical" flexItem />
 
-                                        <br />
+                            <Card className={classes.card}>
+                                {
+                                    loaded &&
+                                    <div>
+                                        <CardContent className={classes.cardContent}>
+                                            <TextField id="title" label="title" variant="outlined" defaultValue={newTask.title} onChange={handleTitleChange} />
 
-                                        <TextareaAutosize
-                                            rowsMax={5}
-                                            rows={"5"}
-                                            cols={"40"}
-                                            className={classes.textarea}
-                                            defaultValue={newTask.description}
-                                            aria-label="description"
-                                            placeholder="Description here ..."
-                                            onChange={handleDescriptionChange}
-                                        />
+                                            <br />
 
-                                        <br />
+                                            <TextareaAutosize
+                                                rowsMax={5}
+                                                rows={"5"}
+                                                cols={"40"}
+                                                className={classes.textarea}
+                                                defaultValue={newTask.description}
+                                                aria-label="description"
+                                                placeholder="Description here ..."
+                                                onChange={handleDescriptionChange}
+                                            />
 
-                                    </CardContent>
-                                    <CardActions className={classes.cardActions}>
-                                        <Button variant="contained" color="secondary" onClick={handleCancel} className={classes.btn}>
-                                            Cancel
-                                        </Button>
-                                        <Button variant="contained" color="primary" onClick={handleSubmit} className={classes.btn}>
-                                            Submit
-                                        </Button>
-                                    </CardActions>
-                                </div>
-                            }
-                        </Card>
+                                            <br />
+
+                                        </CardContent>
+                                        <CardActions className={classes.cardActions}>
+                                            <Button variant="contained" color="secondary" onClick={handleCancel} className={classes.btn}>
+                                                Cancel
+                                            </Button>
+                                            <Button variant="contained" color="primary" onClick={handleSubmit} className={classes.btn}>
+                                                Submit
+                                            </Button>
+                                        </CardActions>
+                                    </div>
+                                }
+                            </Card>
+                        </div>
                     </div>
                 </div>
             </div>
