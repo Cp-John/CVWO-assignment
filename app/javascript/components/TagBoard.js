@@ -88,7 +88,7 @@ const TagBoard = (props) => {
 
     const handleDelete = (id) => () => {
         axios.delete(`/api/categories/${id}`).then(resp => {
-            setTags(tags.filter(tag => tag.attributes.id != id))
+            window.location.href = "/"
         }).catch(resp => {
             console.log(resp)
         })
