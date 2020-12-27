@@ -15,6 +15,7 @@ import Button from '@material-ui/core/Button';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 
 const drawerWidth = 240;
 
@@ -94,6 +95,10 @@ const TagBoard = (props) => {
         })
     }
 
+    const isDuplicate = () => {
+        return tags.map(tag => tag.attributes.title).includes(tagName)
+    }
+
     const handleSelect = props.handleSelectTag
 
     useEffect(() => {
@@ -118,12 +123,12 @@ const TagBoard = (props) => {
                     !ifAddTag &&
                     <div>
                         <div className={classes.actionContainer}>
-                            <Tooltip title="edit tags" style={{display: deletable ? "inlineFlex" : "none"}}>
+                            <Tooltip title="edit tags" style={{ display: deletable ? "inlineFlex" : "none" }}>
                                 <Fab size="small" color="secondary" aria-label="edit" onClick={handleEditTags} className={classes.btn}>
                                     <EditIcon />
                                 </Fab>
                             </Tooltip>
-                            <Tooltip title="create a tag" style={{display: editable ? "inlineFlex" : "none"}}>
+                            <Tooltip title="create a tag" style={{ display: editable ? "inlineFlex" : "none" }}>
                                 <Fab size="small" color="primary" aria-label="add" onClick={handleAddTag} className={classes.btn}>
                                     <AddIcon />
                                 </Fab>
@@ -146,11 +151,19 @@ const TagBoard = (props) => {
                     ifAddTag &&
                     <Card className={classes.formContainer}>
                         <CardContent>
-                            <TextField label="Tag Name" value={tagName} onChange={handleTagNameChange} />
+                            <TextField
+                                label="Tag Name"
+                                value={tagName}
+                                onChange={handleTagNameChange}
+                                error={isDuplicate()}
+                            />
+                            <Typography variant="caption" display="block" style={ {display: isDuplicate() ? "initial" : "none" }} color="secondary" gutterBottom>
+                                The tag already exists!
+                            </Typography>
                         </CardContent>
 
                         <CardActions>
-                            <Button color="primary" size="small" variant="contained" onClick={handleSubmit}>Submit</Button>
+                            <Button color="primary" size="small" variant="contained" onClick={handleSubmit} disabled={isDuplicate()}>Submit</Button>
                             <Button color="secondary" size="small" variant="contained" onClick={handleCancel}>Cancel</Button>
                         </CardActions>
                     </Card>
