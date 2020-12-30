@@ -1,7 +1,5 @@
-# README
+# CVWO Assignment 2020 - TodoManager
 
-* name
-Cao Peng
+* Name: Cao Peng
 
-* matric number
-A0194554W
+* Matriculation Number: A0194554W
