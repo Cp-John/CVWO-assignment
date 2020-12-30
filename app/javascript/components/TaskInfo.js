@@ -85,6 +85,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+// for the page where users can find more info about a task
+
 const TaskInfo = (props) => {
   const [task, setTask] = useState({})
   const [tag, setTag] = useState({})

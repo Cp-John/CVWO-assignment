@@ -51,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+// display all the tags in a permanent drawer
 
 const TagBoard = (props) => {
     const classes = useStyles();

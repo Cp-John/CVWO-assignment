@@ -11,6 +11,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+// props:
+// compulsory: tag
+// optional: ifEdit, ifSelected, handleSelect, handleDelete
 
 const Tag = (props) => {
     const classes = useStyles();

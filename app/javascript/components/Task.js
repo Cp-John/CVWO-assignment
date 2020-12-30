@@ -59,6 +59,10 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+// props:
+// compulsory: tag
+// optional: handleDone, handleDelete, task
+
 const Task = (props) => {
   const classes = useStyles();
 

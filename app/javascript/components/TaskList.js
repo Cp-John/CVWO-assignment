@@ -69,7 +69,7 @@ const TaskList = (props) => {
             color="primary"
           />
         }
-        label="Show Only Completed"
+        label="Show Only Uncompleted"
       />
       <Grid container spacing={5}>
         {

@@ -72,6 +72,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+// for the page where users are able to edit an existing uncompleted task and create a new task
+
 const TaskAction = (props) => {
     const classes = useStyles()
 
