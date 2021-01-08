@@ -100,18 +100,7 @@ const Header = () => {
         setSearchKey(e.target.value)
     }
 
-    const [tasks, setTasks] = useState([])
-    const [loaded, setLoaded] = useState(false)
     const [searchKey, setSearchKey] = useState("")
-
-    useEffect(() => {
-        axios.get('/api/tasks').then(resp => {
-            setTasks(resp.data.data)
-            setLoaded(true)
-        }).catch(resp => {
-            console.log(resp)
-        })
-    }, [])
 
     return (
         <div className={classes.root}>
@@ -141,7 +130,7 @@ const Header = () => {
                         <span className={classes.listBoxContainer} style={{ display: ifFocus ? "block" : "none" }}>
                             <Card className={classes.listBoxCard} >
                                 <CardContent>
-                                    {loaded && <ListBox searchKey={searchKey} isSearchBox={true} />}
+                                    <ListBox searchKey={searchKey} isSearchBox={true} />
                                 </CardContent>
                             </Card>
                         </span>

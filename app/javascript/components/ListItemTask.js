@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import axios from 'axios'
+import {colors} from "./public/data"
 
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -15,11 +16,22 @@ import Divider from '@material-ui/core/Divider';
 import SearchIcon from '@material-ui/icons/Search';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import { makeStyles } from "@material-ui/core";
+
+const useStyles = makeStyles(() => ({
+    listItem: {
+        borderRadius: "5px",
+    },
+    container: {
+        margin: "5px auto",
+    }
+}))
 
 // props:
 // necessary: task, tag, handleDelete
 // optional: isSearchBox
 const ListItemTask = (props) => {
+    const classes = useStyles()
     const [open, setOpen] = useState(false)
     const [task, setTask] = useState(props.task)
 
@@ -52,15 +64,15 @@ const ListItemTask = (props) => {
         if (task.attributes.status == "completed") {
             return <DoneIcon color="primary" />
         } else {
-            return <HourglassFullIcon />
+            return <HourglassFullIcon color="primary"/>
         }
     }
 
-    return (
-        <span>
-            <Divider />
+    const color = colors[id % colors.length]
 
-            <ListItem button onClick={isSearchBox ? goTaskInfo : () => setOpen(!open)} >
+    return (
+        <div className={classes.container}>
+            <ListItem className={classes.listItem} style={{backgroundColor: color}} button onClick={isSearchBox ? goTaskInfo : () => setOpen(!open)} >
                 <ListItemIcon>
                     <StatusIcon />
                 </ListItemIcon>
@@ -69,11 +81,12 @@ const ListItemTask = (props) => {
                     <Chip
                         label={tag.attributes.title}
                         variant="outlined"
+                        style={{backgroundColor: "whitesmoke"}}
                     />
                 </ListItemAvatar>
             </ListItem>
 
-            <Collapse in={open} timeout="auto" unmountOnExit>
+            <Collapse in={open} timeout="auto" unmountOnExit style={{backgroundColor: "whitesmoke"}}>
                 <Tooltip title="view">
                     <IconButton color="primary" onClick={handleView}>
                         <SearchIcon />
@@ -103,7 +116,7 @@ const ListItemTask = (props) => {
                 </Tooltip>
 
             </Collapse>
-        </span>
+        </div>
     )
 }
 
