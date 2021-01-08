@@ -20,10 +20,13 @@ import { makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles(() => ({
     listItem: {
-        borderRadius: "5px",
+        // borderRadius: "5px",
+        borderTopLeftRadius: "5px",
+        borderTopRightRadius: "5px",
     },
     container: {
         margin: "5px auto",
+
     }
 }))
 
@@ -72,7 +75,7 @@ const ListItemTask = (props) => {
 
     return (
         <div className={classes.container}>
-            <ListItem className={classes.listItem} style={{backgroundColor: color}} button onClick={isSearchBox ? goTaskInfo : () => setOpen(!open)} >
+            <ListItem className={classes.listItem} style={{backgroundColor: isSearchBox ? "default" : color}} button onClick={isSearchBox ? goTaskInfo : () => setOpen(!open)} >
                 <ListItemIcon>
                     <StatusIcon />
                 </ListItemIcon>
@@ -86,7 +89,7 @@ const ListItemTask = (props) => {
                 </ListItemAvatar>
             </ListItem>
 
-            <Collapse in={open} timeout="auto" unmountOnExit style={{backgroundColor: "whitesmoke"}}>
+            <Collapse in={open} timeout="auto" unmountOnExit style={{backgroundColor: "#bdbdbd"}}>
                 <Tooltip title="view">
                     <IconButton color="primary" onClick={handleView}>
                         <SearchIcon />
@@ -116,6 +119,8 @@ const ListItemTask = (props) => {
                 </Tooltip>
 
             </Collapse>
+
+            <Divider style={{display: isSearchBox ? "block" : "none"}}/>
         </div>
     )
 }

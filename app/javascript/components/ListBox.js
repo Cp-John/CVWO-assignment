@@ -6,6 +6,9 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import AddIcon from '@material-ui/icons/Add';
 
+// props:
+// optional: isSearchBox, selectedTags, showAll
+
 const ListBox = (props) => {
     const [tasks, setTasks] = useState([])
     const [tags, setTags] = useState([])
@@ -65,8 +68,8 @@ const ListBox = (props) => {
 
     return (
         <List component="nav" dense={isSearchBox}>
-            <ListItem button onClick={handleAddTask} >
-                <AddIcon style={{margin: "auto"}} />
+            <ListItem style={{display: isSearchBox ? "none" : "block", textAlign: "center"}} button onClick={handleAddTask} >
+                <AddIcon />
             </ListItem>
             {
                 tasksShown.map(task => {

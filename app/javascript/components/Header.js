@@ -130,7 +130,7 @@ const Header = () => {
                         <span className={classes.listBoxContainer} style={{ display: ifFocus ? "block" : "none" }}>
                             <Card className={classes.listBoxCard} >
                                 <CardContent>
-                                    <ListBox searchKey={searchKey} isSearchBox={true} />
+                                    <ListBox searchKey={searchKey} isSearchBox={true} showAll={true} />
                                 </CardContent>
                             </Card>
                         </span>
