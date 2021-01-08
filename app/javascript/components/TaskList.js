@@ -2,16 +2,13 @@ import React, { useState, useEffect } from "react"
 import axios from 'axios'
 import Task from './Task'
 
-import Switch from '@material-ui/core/Switch'
 import Grid from '@material-ui/core/Grid';
-import Divider from "@material-ui/core/Divider";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 const TaskList = (props) => {
   const [tasks, setTasks] = useState([])
   const [tags, setTags] = useState([])
-  const [showAll, setShowAll] = useState(true)
   let selectedTags = props.selectedTags
+  let showAll = props.showAll
 
   // fetch data
   useEffect(() => {
@@ -22,10 +19,6 @@ const TaskList = (props) => {
       console.log(resp)
     })
   }, [])
-
-  const handleToggle = () => {
-    setShowAll(!showAll)
-  }
 
   const handleDelete = (id) => () => {
     axios.delete(`/api/tasks/${id}`).then(resp => {
@@ -59,18 +52,6 @@ const TaskList = (props) => {
 
   return (
     <React.Fragment>
-      <Divider />
-      <FormControlLabel
-        control={
-          <Switch
-            checked={!showAll}
-            onChange={handleToggle}
-            name="showAll"
-            color="primary"
-          />
-        }
-        label="Show Only Uncompleted"
-      />
       <Grid container spacing={5}>
         {
           tasksShown.map(task => {

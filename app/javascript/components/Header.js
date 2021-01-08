@@ -62,6 +62,19 @@ const useStyles = makeStyles((theme) => ({
             },
         },
     },
+    listBoxCard: {
+        width: "400px", 
+        height: "400px", 
+        overflowX: "hidden", 
+        overflowY: "scroll",
+    },
+    listBoxContainer: {
+        position: "absolute",
+        top: "100%",
+        zIndex: "100",
+        left: "0px",
+        right: "auto",
+    }
 }));
 
 const goHome = () => {
@@ -125,10 +138,10 @@ const Header = () => {
                             onBlur={onBlurSearch}
                             onChange={onSearch}
                         />
-                        <span style={{ position: "absolute", top: "100%", zIndex: "100", left: "0px", right: "auto", display: ifFocus ? "block" : "none" }}>
-                            <Card style={{ width: "400px", height: "400px" }}>
+                        <span className={classes.listBoxContainer} style={{ display: ifFocus ? "block" : "none" }}>
+                            <Card className={classes.listBoxCard} >
                                 <CardContent>
-                                    {loaded && <ListBox tasks={tasks} searchKey={searchKey} />}
+                                    {loaded && <ListBox searchKey={searchKey} isSearchBox={true} />}
                                 </CardContent>
                             </Card>
                         </span>

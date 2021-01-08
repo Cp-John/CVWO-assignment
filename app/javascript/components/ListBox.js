@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from "react"
 import axios from 'axios'
+import ListItemTask from './ListItemTask'
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Switch from '@material-ui/core/Switch';
-import Chip from '@material-ui/core/Chip';
-import Avatar from '@material-ui/core/Avatar';
-import DoneIcon from '@material-ui/icons/Done';
-import HourglassFullIcon from '@material-ui/icons/HourglassFull';
+import AddIcon from '@material-ui/icons/Add';
 
 const ListBox = (props) => {
     const [tasks, setTasks] = useState([])
     const [tags, setTags] = useState([])
+
+    const isSearchBox = props.isSearchBox
+    let selectedTags = props.selectedTags
+    let showAll = props.showAll
+
 
     // fetch data
     useEffect(() => {
@@ -26,13 +25,22 @@ const ListBox = (props) => {
         })
     }, [])
 
-    const goTaskInfo = (id) => {
-        window.location.href = `/taskinfo/${id}`
-    } 
+    const handleDelete = (id) => () => {
+        axios.delete(`/api/tasks/${id}`).then(resp => {
+            setTasks(tasks.filter(task => task.id != id))
+        }).catch(resp => {
+            console.log(resp)
+        })
+    }
+
+    const handleAddTask = () => {
+        window.location.href = "/task/new"
+    }
 
     const filteredTasks = (searchKey) => {
+        let tasksShown = showAll ? tasks : tasks.filter(task => task.attributes.status != "completed")
         if (searchKey) {
-            return tasks.filter(task => {
+            return tasksShown.filter(task => {
                 let upperCaseTitle = task.attributes.title.toUpperCase()
                 let upperCaseDescription = task.attributes.description.toUpperCase()
                 let upperCaseSearchKey = searchKey.toUpperCase()
@@ -41,40 +49,32 @@ const ListBox = (props) => {
                     upperCaseDescription.includes(upperCaseSearchKey)
             })
         } else {
-            return tasks
+            return tasksShown
         }
     }
 
     let tasksShown = filteredTasks(props.searchKey)
 
+    if (!isSearchBox && selectedTags.length > 0) {
+        selectedTags.forEach(tagId => {
+            tasksShown = tasksShown.filter(task => {
+                return parseInt(task.relationships.category.data.id) == tagId
+            })
+        });
+    }
+
     return (
-        <List component="nav">
+        <List component="nav" dense={isSearchBox}>
+            <ListItem button onClick={handleAddTask} >
+                <AddIcon style={{margin: "auto"}} />
+            </ListItem>
             {
                 tasksShown.map(task => {
                     const tag = tags.find(tag => tag.id == task.relationships.category.data.id)
-                    const avatar = tag.attributes.title.charAt(0).toUpperCase()
-                    const StatusIcon = () => {
-                        if (task.attributes.status == "completed") {
-                            return <DoneIcon color="primary" />
-                        } else {
-                            return <HourglassFullIcon />
-                        }
-                    }
-
                     return (
-                        <ListItem button key={task.attributes.id} onClick={() => goTaskInfo(task.attributes.id)}>
-                            <ListItemIcon>
-                                <StatusIcon />
-                            </ListItemIcon>
-                            <ListItemText primary={task.attributes.title} />
-                            <ListItemAvatar>
-                                <Chip
-                                    label={tag.attributes.title}
-                                    avatar={<Avatar>{avatar}</Avatar>}
-                                    variant="outlined"
-                                />
-                            </ListItemAvatar>
-                        </ListItem>
+                        <ListItemTask key={task.attributes.id}
+                            task={task} tag={tag} isSearchBox={isSearchBox}
+                            handleDelete={handleDelete} />
                     )
                 })
             }
