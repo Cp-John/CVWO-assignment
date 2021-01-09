@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ListBox from './ListBox';
-import axios from 'axios';
+import { goHome } from './public/data'
 
 import { fade, Theme, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -63,9 +63,9 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     listBoxCard: {
-        width: "400px", 
-        height: "400px", 
-        overflowX: "hidden", 
+        width: "400px",
+        height: "400px",
+        overflowX: "hidden",
         overflowY: "scroll",
     },
     listBoxContainer: {
@@ -76,10 +76,6 @@ const useStyles = makeStyles((theme) => ({
         right: "auto",
     }
 }));
-
-const goHome = () => {
-    window.location.href = "/"
-}
 
 const Header = () => {
     const classes = useStyles();

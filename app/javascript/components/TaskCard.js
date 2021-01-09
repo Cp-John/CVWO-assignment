@@ -1,5 +1,5 @@
 import React from 'react';
-import { colors } from './public/data'
+import { getColor, handleEditTask, handleAddTask, handleViewTask } from './public/data'
 
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
@@ -14,18 +14,6 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/Add';
 import Chip from '@material-ui/core/Chip';
-
-const handleView = (id) => () => {
-  window.location.href = `/taskinfo/${id}`
-}
-
-const handleEdit = (id) => () => {
-  window.location.href = `/task/edit/${id}`
-}
-
-const handleAddTask = () => {
-  window.location.href = "/task/new"
-}
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -63,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
 // compulsory: tag
 // optional: handleDone, handleDelete, task
 
-const Task = (props) => {
+const TaskCard = (props) => {
   const classes = useStyles();
 
   const tag = props.tag
@@ -82,7 +70,7 @@ const Task = (props) => {
     const task = props.task
     const id = task.attributes.id
     const status = task.attributes.status
-    const color = colors[id % colors.length]
+    const color = getColor(id)
     const className = status == "completed" ? classes.doneTask : classes.cardActionArea
 
     return (
@@ -103,7 +91,7 @@ const Task = (props) => {
         <CardActions className={classes.cardActions}>
 
           <Tooltip title="view">
-            <IconButton size="small" color="primary" onClick={handleView(id)}>
+            <IconButton size="small" color="primary" onClick={handleViewTask(id)}>
               <SearchIcon />
             </IconButton>
           </Tooltip>
@@ -116,7 +104,7 @@ const Task = (props) => {
 
           <Tooltip title="edit">
             <span>
-              <IconButton size="small" color="primary" onClick={handleEdit(id)} disabled={status == "completed"}>
+              <IconButton size="small" color="primary" onClick={handleEditTask(id)} disabled={status == "completed"}>
                 <EditIcon />
               </IconButton>
             </span>
@@ -128,4 +116,4 @@ const Task = (props) => {
   }
 }
 
-export default Task
+export default TaskCard

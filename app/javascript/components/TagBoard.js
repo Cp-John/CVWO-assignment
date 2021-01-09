@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Tag from './Tag';
 import axios from 'axios'
+import NewTagForm from './NewTagForm';
+import { drawerWidth, goHome } from './public/data'
 
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -9,15 +11,7 @@ import Paper from '@material-ui/core/Paper';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
-import Card from '@material-ui/core/Card';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
 import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-
-const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
     drawer: {
@@ -26,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
     },
     drawerPaper: {
         width: drawerWidth,
+        backgroundColor: "whitesmoke",
     },
     drawerContainer: {
         overflow: 'auto',
@@ -39,12 +34,9 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'wrap',
         listStyle: 'none',
         padding: theme.spacing(0.5),
-        margin: "0"
-    },
-    formContainer: {
-        padding: "10px",
-        margin: "200px auto",
-        width: "80%",
+        margin: "0",
+        backgroundColor: "whitesmoke",
+        boxShadow: "none",
     },
     actionContainer: {
         textAlign: "right",
@@ -79,6 +71,7 @@ const TagBoard = (props) => {
         axios.post("/api/categories", { title: tagName }).then(resp => {
             setTags(tags.concat([resp.data.data]))
             setIfAddTag(false)
+            setTagName("")
         }).catch(resp => {
             console.log(resp)
         })
@@ -90,7 +83,7 @@ const TagBoard = (props) => {
 
     const handleDelete = (id) => () => {
         axios.delete(`/api/categories/${id}`).then(resp => {
-            window.location.href = "/"
+            goHome()
         }).catch(resp => {
             console.log(resp)
         })
@@ -104,7 +97,16 @@ const TagBoard = (props) => {
 
     useEffect(() => {
         axios.get("/api/categories").then(resp => {
-            setTags(resp.data.data)
+            if (resp.data.data.length == 0) {
+                axios.post("/api/categories", { title: "others" }).then(resp => {
+                    setTags(resp.data.data)
+                    setIfAddTag(false)
+                }).catch(resp => {
+                    console.log(resp)
+                })
+            } else {
+                setTags(resp.data.data)
+            }
         }).catch(resp => {
             console.log(resp)
         })
@@ -150,24 +152,8 @@ const TagBoard = (props) => {
 
                 {
                     ifAddTag &&
-                    <Card className={classes.formContainer}>
-                        <CardContent>
-                            <TextField
-                                label="Tag Name"
-                                value={tagName}
-                                onChange={handleTagNameChange}
-                                error={isDuplicate()}
-                            />
-                            <Typography variant="caption" display="block" style={ {display: isDuplicate() ? "initial" : "none" }} color="secondary" gutterBottom>
-                                The tag already exists!
-                            </Typography>
-                        </CardContent>
-
-                        <CardActions>
-                            <Button color="primary" size="small" variant="contained" onClick={handleSubmit} disabled={isDuplicate()}>Submit</Button>
-                            <Button color="secondary" size="small" variant="contained" onClick={handleCancel}>Cancel</Button>
-                        </CardActions>
-                    </Card>
+                    <NewTagForm handleTagNameChange={handleTagNameChange}
+                        isDuplicate={isDuplicate} handleSubmit={handleSubmit} handleCancel={handleCancel} />
                 }
 
             </div>

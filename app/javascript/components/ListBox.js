@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import axios from 'axios'
-import ListItemTask from './ListItemTask'
+import TaskListItem from './TaskListItem'
+import { handleAddTask } from './public/data'
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -34,10 +35,6 @@ const ListBox = (props) => {
         }).catch(resp => {
             console.log(resp)
         })
-    }
-
-    const handleAddTask = () => {
-        window.location.href = "/task/new"
     }
 
     const filteredTasks = (searchKey) => {
@@ -75,7 +72,7 @@ const ListBox = (props) => {
                 tasksShown.map(task => {
                     const tag = tags.find(tag => tag.id == task.relationships.category.data.id)
                     return (
-                        <ListItemTask key={task.attributes.id}
+                        <TaskListItem key={task.attributes.id}
                             task={task} tag={tag} isSearchBox={isSearchBox}
                             handleDelete={handleDelete} />
                     )

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import axios from 'axios'
-import Task from './Task'
+import TaskCard from './TaskCard'
 
 import Grid from '@material-ui/core/Grid';
 
@@ -58,13 +58,13 @@ const TaskList = (props) => {
             const tag = tags.find(tag => tag.id == task.relationships.category.data.id)
             return (
               <Grid item key={task.attributes.id}>
-                <Task task={task} tag={tag} handleDone={handleDone} handleDelete={handleDelete} />
+                <TaskCard task={task} tag={tag} handleDone={handleDone} handleDelete={handleDelete} />
               </Grid>
             )
           })
         }
         <Grid item>
-          <Task />
+          <TaskCard />
         </Grid>
       </Grid>
     </React.Fragment>

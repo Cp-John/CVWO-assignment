@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
-import { colors } from './public/data';
+import { getColor, handleEditTask, goHome } from './public/data';
 import clsx from 'clsx';
 import TagBoard from './TagBoard';
 
@@ -20,13 +20,9 @@ import DoneIcon from '@material-ui/icons/Done';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { green } from '@material-ui/core/colors'
 
-const handleEdit = (id) => () => {
-  window.location.href = `/task/edit/${id}`
-}
-
 const handleDelete = (id) => () => {
   axios.delete(`/api/tasks/${id}`).then(resp => {
-    window.location.href = "/"
+    goHome()
   }).catch(resp => {
     console.log(resp)
   })
@@ -128,11 +124,7 @@ const TaskInfo = (props) => {
     })
   }
 
-  const goHome = () => {
-    window.location.href = "/"
-  }
-
-  const color = colors[id % colors.length]
+  const color = getColor(id)
 
   return (
     <React.Fragment>
@@ -162,7 +154,7 @@ const TaskInfo = (props) => {
 
                   <Tooltip title="edit">
                     <span>
-                      <IconButton color="primary" onClick={handleEdit(id)} disabled={task.attributes.status == "completed"}>
+                      <IconButton color="primary" onClick={handleEditTask(id)} disabled={task.attributes.status == "completed"}>
                         <EditIcon />
                       </IconButton>
                     </span>

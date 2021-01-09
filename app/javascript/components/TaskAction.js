@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react"
 import axios from 'axios'
 import TagBoard from './TagBoard'
-import { colors } from './public/data'
+import NewTaskForm from './NewTaskForm'
+import { getRandomColor, goTaskInfo, goHome } from './public/data'
 
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -81,14 +82,12 @@ const TaskAction = (props) => {
     const [loaded, setLoaded] = useState(false)
     const [selectedTags, setSelectedTags] = useState([1])
     const [tagTitle, setTagTitle] = useState("others")
-    const [color, setColor] = useState(undefined)
 
     const id = props.match.params.id
     const action = id ? "Edit" : "New"
+    const color = getRandomColor()
 
     useEffect(() => {
-        const rdm = Math.floor(Math.random() * colors.length)
-        setColor(colors[rdm])
 
         if (action == "Edit") {
             axios.get(`/api/tasks/${id}`).then(resp => {
@@ -108,21 +107,21 @@ const TaskAction = (props) => {
     const handleSubmit = () => {
         if (id) {
             axios.put(`/api/tasks/${id}`, { task: newTask }).then(resp => {
-                window.location.href = `/taskinfo/${id}`
+                goTaskInfo(id)
             }).catch(resp => console.log(resp))
         } else {
             axios.post('/api/tasks', { task: newTask }).then(resp => {
                 const id = resp.data.data.id
-                window.location.href = `/taskinfo/${id}`
+                goTaskInfo(id)
             }).catch(resp => console.log(resp))
         }
     }
 
     const handleCancel = () => {
         if (id) {
-            window.location.href = `/taskinfo/${id}`
+            goTaskInfo(id)
         } else {
-            window.location.href = "/"
+            goHome()
         }
     }
 
@@ -214,6 +213,7 @@ const TaskAction = (props) => {
                     </div>
                 </div>
             </div>
+            <NewTaskForm />
         </React.Fragment>
     );
 }

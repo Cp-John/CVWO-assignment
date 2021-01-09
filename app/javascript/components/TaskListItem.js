@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import axios from 'axios'
-import {colors} from "./public/data"
+import { getColor, handleEditTask, handleViewTask } from "./public/data"
 
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -33,7 +33,7 @@ const useStyles = makeStyles(() => ({
 // props:
 // necessary: task, tag, handleDelete
 // optional: isSearchBox
-const ListItemTask = (props) => {
+const TaskListItem = (props) => {
     const classes = useStyles()
     const [open, setOpen] = useState(false)
     const [task, setTask] = useState(props.task)
@@ -42,18 +42,6 @@ const ListItemTask = (props) => {
     const isSearchBox = props.isSearchBox
 
     const id = task.attributes.id
-
-    const goTaskInfo = () => {
-        window.location.href = `/taskinfo/${id}`
-    }
-
-    const handleView = () => {
-        window.location.href = `/taskinfo/${id}`
-    }
-
-    const handleEdit = () => {
-        window.location.href = `/task/edit/${id}`
-    }
 
     const handleDone = () => {
         axios.patch(`/api/tasks/${id}`, { status: "completed" }).then(resp => {
@@ -67,15 +55,15 @@ const ListItemTask = (props) => {
         if (task.attributes.status == "completed") {
             return <DoneIcon color="primary" />
         } else {
-            return <HourglassFullIcon color="primary"/>
+            return <HourglassFullIcon color="primary" />
         }
     }
 
-    const color = colors[id % colors.length]
+    const color = getColor()
 
     return (
         <div className={classes.container}>
-            <ListItem className={classes.listItem} style={{backgroundColor: isSearchBox ? "default" : color}} button onClick={isSearchBox ? goTaskInfo : () => setOpen(!open)} >
+            <ListItem className={classes.listItem} style={{ backgroundColor: isSearchBox ? "default" : color }} button onClick={isSearchBox ? handleViewTask(id) : () => setOpen(!open)} >
                 <ListItemIcon>
                     <StatusIcon />
                 </ListItemIcon>
@@ -84,14 +72,14 @@ const ListItemTask = (props) => {
                     <Chip
                         label={tag.attributes.title}
                         variant="outlined"
-                        style={{backgroundColor: "whitesmoke"}}
+                        style={{ backgroundColor: "whitesmoke" }}
                     />
                 </ListItemAvatar>
             </ListItem>
 
-            <Collapse in={open} timeout="auto" unmountOnExit style={{backgroundColor: "#bdbdbd"}}>
+            <Collapse in={open} timeout="auto" unmountOnExit style={{ backgroundColor: "#bdbdbd" }}>
                 <Tooltip title="view">
-                    <IconButton color="primary" onClick={handleView}>
+                    <IconButton color="primary" onClick={handleViewTask(id)}>
                         <SearchIcon />
                     </IconButton>
                 </Tooltip>
@@ -104,7 +92,7 @@ const ListItemTask = (props) => {
 
                 <Tooltip title="edit">
                     <span>
-                        <IconButton color="primary" onClick={handleEdit} disabled={task.attributes.status == "completed"}>
+                        <IconButton color="primary" onClick={handleEditTask(id)} disabled={task.attributes.status == "completed"}>
                             <EditIcon />
                         </IconButton>
                     </span>
@@ -120,9 +108,9 @@ const ListItemTask = (props) => {
 
             </Collapse>
 
-            <Divider style={{display: isSearchBox ? "block" : "none"}}/>
+            <Divider style={{ display: isSearchBox ? "block" : "none" }} />
         </div>
     )
 }
 
-export default ListItemTask
+export default TaskListItem
