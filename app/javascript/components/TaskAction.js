@@ -2,16 +2,12 @@ import React, { useState, useEffect } from "react"
 import axios from 'axios'
 import TagBoard from './TagBoard'
 import NewTaskForm from './NewTaskForm'
-import { getRandomColor, goTaskInfo, goHome } from './public/data'
+import { getRandomColor, goTaskInfo, goHome, defaultCategoryId } from './public/data'
 
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
-import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Chip from "@material-ui/core/Chip";
 
@@ -54,23 +50,6 @@ const useStyles = makeStyles((theme) => ({
         whiteSpace: "normal",
         textAlign: "left",
     },
-    cardActions: {
-        textAlign: "center",
-        backgroundColor: "whitesmoke",
-    },
-    btn: {
-        margin: "0 80px",
-    },
-    textarea: {
-        fontSize: "13px",
-        letterSpacing: "1px",
-        lineHeight: "1.5",
-        boxShadow: "1px 1px 1px #999",
-        padding: "10px",
-        border: "1px solid #ccc",
-        borderRadius: "5px",
-        margin: "30px auto",
-    },
 }));
 
 // for the page where users are able to edit an existing uncompleted task and create a new task
@@ -80,7 +59,7 @@ const TaskAction = (props) => {
 
     const [newTask, setNewTask] = useState({})
     const [loaded, setLoaded] = useState(false)
-    const [selectedTags, setSelectedTags] = useState([1])
+    const [selectedTags, setSelectedTags] = useState([defaultCategoryId])
     const [tagTitle, setTagTitle] = useState("others")
 
     const id = props.match.params.id
@@ -99,13 +78,13 @@ const TaskAction = (props) => {
                 console.log(resp)
             })
         } else {
-            setNewTask({ title: "", description: "", category_id: 1 })
+            setNewTask({ title: "", description: "", category_id: defaultCategoryId })
             setLoaded(true)
         }
     }, [])
 
     const handleSubmit = () => {
-        if (id) {
+        if (action == "Edit") {
             axios.put(`/api/tasks/${id}`, { task: newTask }).then(resp => {
                 goTaskInfo(id)
             }).catch(resp => console.log(resp))
@@ -118,7 +97,7 @@ const TaskAction = (props) => {
     }
 
     const handleCancel = () => {
-        if (id) {
+        if (action == "Edit") {
             goTaskInfo(id)
         } else {
             goHome()
@@ -139,9 +118,9 @@ const TaskAction = (props) => {
 
     const handleSelectTag = (selectedTag) => {
         if (selectedTags.includes(selectedTag.attributes.id)) {
-            setSelectedTags([1])
+            setSelectedTags([defaultCategoryId])
             setTagTitle("others")
-            setNewTask(Object.assign({}, newTask, { category_id: 1 }))
+            setNewTask(Object.assign({}, newTask, { category_id: defaultCategoryId }))
         } else {
             setSelectedTags([selectedTag.attributes.id])
             setTagTitle(selectedTag.attributes.title)
@@ -175,45 +154,15 @@ const TaskAction = (props) => {
                             </Card>
                             <Divider orientation="vertical" flexItem />
 
-                            <Card className={classes.card}>
-                                {
-                                    loaded &&
-                                    <div>
-                                        <CardContent className={classes.cardContent}>
-                                            <TextField id="title" label="title" variant="outlined" defaultValue={newTask.title} onChange={handleTitleChange} />
-
-                                            <br />
-
-                                            <TextareaAutosize
-                                                rowsMax={5}
-                                                rows={"5"}
-                                                cols={"40"}
-                                                className={classes.textarea}
-                                                defaultValue={newTask.description}
-                                                aria-label="description"
-                                                placeholder="Description here ..."
-                                                onChange={handleDescriptionChange}
-                                            />
-
-                                            <br />
-
-                                        </CardContent>
-                                        <CardActions className={classes.cardActions}>
-                                            <Button variant="contained" color="secondary" onClick={handleCancel} className={classes.btn}>
-                                                Cancel
-                                            </Button>
-                                            <Button variant="contained" color="primary" onClick={handleSubmit} className={classes.btn}>
-                                                Submit
-                                            </Button>
-                                        </CardActions>
-                                    </div>
-                                }
-                            </Card>
+                            {
+                                loaded && 
+                                <NewTaskForm handleCancel={handleCancel} newTask={newTask} handleTitleChange={handleTitleChange} 
+                                handleDescriptionChange={handleDescriptionChange} handleCancel={handleCancel} handleSubmit={handleSubmit} />
+                            }
                         </div>
                     </div>
                 </div>
             </div>
-            <NewTaskForm />
         </React.Fragment>
     );
 }

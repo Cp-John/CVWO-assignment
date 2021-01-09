@@ -20,7 +20,6 @@ import { makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles(() => ({
     listItem: {
-        // borderRadius: "5px",
         borderTopLeftRadius: "5px",
         borderTopRightRadius: "5px",
     },
@@ -59,7 +58,7 @@ const TaskListItem = (props) => {
         }
     }
 
-    const color = getColor()
+    const color = getColor(id)
 
     return (
         <div className={classes.container}>

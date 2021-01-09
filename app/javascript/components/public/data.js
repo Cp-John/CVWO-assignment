@@ -2,13 +2,14 @@ export const colors = ["#f2777a", "#99cd98", "#ffcd65", "#65cccc", "#659acc", "#
 
 export const drawerWidth = 240;
 
+export const defaultCategoryId = 1
+
 export const getColor = (id) => {
     return colors[id % colors.length]
 }
 
 export const getRandomColor = () => {
-    const rdm = Math.floor(Math.random() * colors.length)
-    return colors[rdm]
+    return colors[0]
 }
 
 export const handleEditTask = (id) => () => {
