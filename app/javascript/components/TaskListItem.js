@@ -12,7 +12,6 @@ import HourglassFullIcon from '@material-ui/icons/HourglassFull';
 import Collapse from '@material-ui/core/Collapse';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
-import Divider from '@material-ui/core/Divider';
 import SearchIcon from '@material-ui/icons/Search';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
@@ -30,25 +29,18 @@ const useStyles = makeStyles(() => ({
 }))
 
 // props:
-// necessary: task, tag, handleDelete
-// optional: isSearchBox
+// necessary: task, tag, handleDeleteTask, handleDoneTask
+
 const TaskListItem = (props) => {
     const classes = useStyles()
     const [open, setOpen] = useState(false)
     const [task, setTask] = useState(props.task)
 
     const tag = props.tag
-    const isSearchBox = props.isSearchBox
 
     const id = task.attributes.id
 
-    const handleDone = () => {
-        axios.patch(`/api/tasks/${id}`, { status: "completed" }).then(resp => {
-            setTask(resp.data.data)
-        }).catch(resp => {
-            console.log(resp)
-        })
-    }
+    const handleDoneTask = props.handleDoneTask
 
     const StatusIcon = () => {
         if (task.attributes.status == "completed") {
@@ -62,7 +54,7 @@ const TaskListItem = (props) => {
 
     return (
         <div className={classes.container}>
-            <ListItem className={classes.listItem} style={{ backgroundColor: isSearchBox ? "default" : color }} button onClick={isSearchBox ? handleViewTask(id) : () => setOpen(!open)} >
+            <ListItem className={classes.listItem} style={{ backgroundColor: color }} button onClick={() => setOpen(!open)} >
                 <ListItemIcon>
                     <StatusIcon />
                 </ListItemIcon>
@@ -84,7 +76,7 @@ const TaskListItem = (props) => {
                 </Tooltip>
 
                 <Tooltip title="delete">
-                    <IconButton color="secondary" onClick={props.handleDelete(id)}>
+                    <IconButton color="secondary" onClick={props.handleDeleteTask(id)}>
                         <DeleteForeverIcon />
                     </IconButton>
                 </Tooltip>
@@ -99,7 +91,7 @@ const TaskListItem = (props) => {
 
                 <Tooltip title="done">
                     <span>
-                        <IconButton color="primary" onClick={handleDone} disabled={task.attributes.status == "completed"}>
+                        <IconButton color="primary" onClick={handleDoneTask(id)} disabled={task.attributes.status == "completed"}>
                             <DoneIcon />
                         </IconButton>
                     </span>
@@ -107,7 +99,6 @@ const TaskListItem = (props) => {
 
             </Collapse>
 
-            <Divider style={{ display: isSearchBox ? "block" : "none" }} />
         </div>
     )
 }

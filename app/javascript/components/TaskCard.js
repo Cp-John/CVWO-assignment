@@ -1,5 +1,6 @@
 import React from 'react';
 import { getColor, handleEditTask, handleAddTask, handleViewTask } from './public/data'
+import axios from 'axios'
 
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
@@ -49,15 +50,16 @@ const useStyles = makeStyles((theme) => ({
 
 // props:
 // compulsory: tag
-// optional: handleDone, handleDelete, task
+// optional: handleDoneTask, handleDeleteTask, task
 
 const TaskCard = (props) => {
   const classes = useStyles();
 
   const tag = props.tag
 
-  const handleDone = props.handleDone
-  const handleDelete = props.handleDelete
+  const handleDeleteTask = props.handleDeleteTask
+  const handleDoneTask = props.handleDoneTask
+
   if (!props.task) {
     return (
       <Card className={classes.card}>
@@ -75,7 +77,7 @@ const TaskCard = (props) => {
 
     return (
       <Card className={classes.card}>
-        <CardActionArea style={{ backgroundColor: color }} className={className} onClick={handleDone(id)} disabled={status == "completed"}>
+        <CardActionArea style={{ backgroundColor: color }} className={className} onClick={handleDoneTask(id)} disabled={status == "completed"}>
           <div className={classes.tagContainer}>
             <Chip label={tag.attributes.title} style={{ marginLeft: "5px", height: "20px" }}></Chip>
           </div>
@@ -97,7 +99,7 @@ const TaskCard = (props) => {
           </Tooltip>
 
           <Tooltip title="delete">
-            <IconButton size="small" color="secondary" onClick={handleDelete(id)}>
+            <IconButton size="small" color="secondary" onClick={handleDeleteTask(id)}>
               <DeleteForeverIcon />
             </IconButton>
           </Tooltip>
