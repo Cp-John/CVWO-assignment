@@ -1,5 +1,4 @@
 import React, { useState } from "react"
-import axios from 'axios'
 import { getColor, handleEditTask, handleViewTask } from "./public/data"
 
 import ListItem from '@material-ui/core/ListItem';
@@ -34,9 +33,9 @@ const useStyles = makeStyles(() => ({
 const TaskListItem = (props) => {
     const classes = useStyles()
     const [open, setOpen] = useState(false)
-    const [task, setTask] = useState(props.task)
 
     const tag = props.tag
+    const task = props.task
 
     const id = task.attributes.id
 
