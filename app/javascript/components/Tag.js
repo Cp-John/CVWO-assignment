@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { defaultTagName } from './public/data'
 
 import { makeStyles } from '@material-ui/core/styles';
 import Chip from '@material-ui/core/Chip';
@@ -37,6 +38,7 @@ const Tag = (props) => {
             onDelete={handleDelete}
             onClick={handleSelect}
             color={ifSelected ? "primary" : "default"}
+            disabled={ifEdit && tag.attributes.title == defaultTagName}
         />
     )
 

@@ -4,6 +4,8 @@ export const drawerWidth = 240;
 
 export const defaultCategoryId = 1
 
+export const defaultTagName = "others"
+
 export const getColor = (id) => {
     return colors[id % colors.length]
 }

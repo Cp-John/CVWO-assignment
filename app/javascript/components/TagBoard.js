@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Tag from './Tag';
 import axios from 'axios'
 import NewTagForm from './NewTagForm';
-import { drawerWidth, goHome } from './public/data'
+import { drawerWidth, goHome, defaultTagName } from './public/data'
 
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -98,7 +98,7 @@ const TagBoard = (props) => {
     useEffect(() => {
         axios.get("/api/categories").then(resp => {
             if (resp.data.data.length == 0) {
-                axios.post("/api/categories", { title: "others" }).then(resp => {
+                axios.post("/api/categories", { title: defaultTagName }).then(resp => {
                     setTags(resp.data.data)
                     setIfAddTag(false)
                 }).catch(resp => {
@@ -127,7 +127,7 @@ const TagBoard = (props) => {
                     <div>
                         <div className={classes.actionContainer}>
                             <Tooltip title="edit tags" style={{ display: deletable ? "inlineFlex" : "none" }}>
-                                <Fab size="small" color="secondary" aria-label="edit" onClick={handleEditTags} className={classes.btn}>
+                                <Fab size="small" color={ifEditTags ? "secondary" : "default"} aria-label="edit" onClick={handleEditTags} className={classes.btn}>
                                     <EditIcon />
                                 </Fab>
                             </Tooltip>
