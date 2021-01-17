@@ -55,7 +55,7 @@ const FilterInput = (props) => {
                 </div>
                 <InputBase
                     className={classes.input}
-                    placeholder="Search ..."
+                    placeholder="Title or description ..."
                     value={searchKey}
                     onChange={handleSearchKeyChange}
                 />
